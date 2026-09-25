@@ -1,0 +1,669 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		220192EC942F9CE48951F269 /* JBHuntTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042CCFF080763EB9B7A6ED94 /* JBHuntTheme.swift */; };
+		24E59779C27AD532862C031A /* ResumeReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE98BD5B6F6D735B5F8216CE /* ResumeReviewView.swift */; };
+		3124D1F9B24E3ED9F2EEB3BF /* TalentIQApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE3D4A30F95F0E22271AD23 /* TalentIQApp.swift */; };
+		393FE893F27AE53DE558843D /* CandidateIntakeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F959F5B3212698152EA6EB /* CandidateIntakeView.swift */; };
+		4E687FC13E928DAF1DC111D0 /* CandidateIntakeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9D7C6A353196A130235CA /* CandidateIntakeState.swift */; };
+		4E932781983CE0DF3E35ED07 /* TalentIQRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6424E6E8C7E95D929642742A /* TalentIQRepository.swift */; };
+		5FA92FD76786CA0CC0883607 /* ResumeProfileParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B8FFEEF3782C91D8912648 /* ResumeProfileParser.swift */; };
+		613E5E458AFF135891662EA7 /* SpeechTranscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B568E72D4C106771703B123C /* SpeechTranscriptionService.swift */; };
+		6584CBE003E332938E665328 /* InterviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECC4A9FA4E68E43901264E1 /* InterviewView.swift */; };
+		6CB9A7091C1959F58B05DB2A /* ResumeOCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E175B3E3C584DABB457D08 /* ResumeOCRService.swift */; };
+		7AA9F492CB9E3854376837AD /* CandidateInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3873EA249326BB4D4B17FE64 /* CandidateInfoView.swift */; };
+		7E68460E50D1BAF9CD5CC2E2 /* CandidateReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6E3352553DAE2D909DA0B5 /* CandidateReviewView.swift */; };
+		85E771FAA1A9449C08AE9DE8 /* AudioRecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BE7E02B303562BE64D24855 /* AudioRecordingService.swift */; };
+		8824D8882091A35724139230 /* ResumeDocumentProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E7F3DCDEF7A6A4D71F5197 /* ResumeDocumentProcessor.swift */; };
+		898F415E069210D389DE3D51 /* ResumeOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7145BE91256FAE907CDC97A9 /* ResumeOptionsView.swift */; };
+		91D6B32F9E1B13143A987447 /* SkillsSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D4129B1F7CDF875B973209 /* SkillsSelectionView.swift */; };
+		A512D691C70B1E71D6B12356 /* LocalTalentIQRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D032BF96E370D85BE5B4572 /* LocalTalentIQRepository.swift */; };
+		AB5A77C7D004D388869A0B67 /* InterviewNotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E566ED93ABA76201BC0C03F5 /* InterviewNotesView.swift */; };
+		B988339AC9DC87F1EA12DEBC /* TalentIQTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97DEB85FDEAD7EEFD9E5024 /* TalentIQTests.swift */; };
+		BEA248E80D6E5F32254C47D4 /* Domain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A3BF9DCCDB7F2189BE682A /* Domain.swift */; };
+		C1E764A1BA96B1A83E3076B9 /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C664A76FD7E6D33526D05C35 /* AdminDashboardView.swift */; };
+		C62EABC93C02FFB7BCD8E18B /* InterviewNoteGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B828BA9AB3296E33D68DCE94 /* InterviewNoteGenerator.swift */; };
+		E33F99D2D7A62F5C8FE06347 /* EventCheckInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA22729D308768EEA315BA5 /* EventCheckInView.swift */; };
+		E876436298629256ABBF4A5E /* CandidateDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B755190690196736867AC2 /* CandidateDetailView.swift */; };
+		FD97E85E3429CE2CA829C970 /* ResumeTextExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EAD0B084194F030382234B /* ResumeTextExtractor.swift */; };
+		AA0000000000000000000001 /* CandidateEvaluationGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000002 /* CandidateEvaluationGenerator.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		78946A7B364F3DBA4C691FCC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01C391DCD2FE86DCFFA73DA7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 71260AC3D1BE21E57F95776D;
+			remoteInfo = TalentIQ;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		042CCFF080763EB9B7A6ED94 /* JBHuntTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JBHuntTheme.swift; sourceTree = "<group>"; };
+		1BE7E02B303562BE64D24855 /* AudioRecordingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordingService.swift; sourceTree = "<group>"; };
+		2AE3D4A30F95F0E22271AD23 /* TalentIQApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalentIQApp.swift; sourceTree = "<group>"; };
+		3873EA249326BB4D4B17FE64 /* CandidateInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandidateInfoView.swift; sourceTree = "<group>"; };
+		42E175B3E3C584DABB457D08 /* ResumeOCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeOCRService.swift; sourceTree = "<group>"; };
+		585A85BAC6FD161646E28B70 /* TalentIQ.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TalentIQ.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AB9D7C6A353196A130235CA /* CandidateIntakeState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandidateIntakeState.swift; sourceTree = "<group>"; };
+		6424E6E8C7E95D929642742A /* TalentIQRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalentIQRepository.swift; sourceTree = "<group>"; };
+		68B755190690196736867AC2 /* CandidateDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandidateDetailView.swift; sourceTree = "<group>"; };
+		7145BE91256FAE907CDC97A9 /* ResumeOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeOptionsView.swift; sourceTree = "<group>"; };
+		7A6E3352553DAE2D909DA0B5 /* CandidateReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandidateReviewView.swift; sourceTree = "<group>"; };
+		7D032BF96E370D85BE5B4572 /* LocalTalentIQRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalTalentIQRepository.swift; sourceTree = "<group>"; };
+		88B8FFEEF3782C91D8912648 /* ResumeProfileParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeProfileParser.swift; sourceTree = "<group>"; };
+		A2A3BF9DCCDB7F2189BE682A /* Domain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Domain.swift; sourceTree = "<group>"; };
+		B4E7F3DCDEF7A6A4D71F5197 /* ResumeDocumentProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeDocumentProcessor.swift; sourceTree = "<group>"; };
+		B568E72D4C106771703B123C /* SpeechTranscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTranscriptionService.swift; sourceTree = "<group>"; };
+		B828BA9AB3296E33D68DCE94 /* InterviewNoteGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewNoteGenerator.swift; sourceTree = "<group>"; };
+		BBC2879EE7DA35CE4E6F1085 /* TalentIQTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TalentIQTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE98BD5B6F6D735B5F8216CE /* ResumeReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeReviewView.swift; sourceTree = "<group>"; };
+		C664A76FD7E6D33526D05C35 /* AdminDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDashboardView.swift; sourceTree = "<group>"; };
+		DEA22729D308768EEA315BA5 /* EventCheckInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCheckInView.swift; sourceTree = "<group>"; };
+		DECC4A9FA4E68E43901264E1 /* InterviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewView.swift; sourceTree = "<group>"; };
+		E566ED93ABA76201BC0C03F5 /* InterviewNotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewNotesView.swift; sourceTree = "<group>"; };
+		F0EAD0B084194F030382234B /* ResumeTextExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeTextExtractor.swift; sourceTree = "<group>"; };
+		F2F959F5B3212698152EA6EB /* CandidateIntakeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandidateIntakeView.swift; sourceTree = "<group>"; };
+		F3D4129B1F7CDF875B973209 /* SkillsSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsSelectionView.swift; sourceTree = "<group>"; };
+		F97DEB85FDEAD7EEFD9E5024 /* TalentIQTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalentIQTests.swift; sourceTree = "<group>"; };
+		AA0000000000000000000002 /* CandidateEvaluationGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandidateEvaluationGenerator.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		04186CC0384DE7C389F37914 /* CandidateIntake */ = {
+			isa = PBXGroup;
+			children = (
+				5AB9D7C6A353196A130235CA /* CandidateIntakeState.swift */,
+				F2F959F5B3212698152EA6EB /* CandidateIntakeView.swift */,
+				32F5F6B95731F31F0B119A96 /* CheckIn */,
+				7D70138D6A17E93E1AD78498 /* Profile */,
+				AC22BA066066F6B03388C553 /* Resume */,
+				50410F067EC47387A2AF9EBA /* Review */,
+				FF760B3CC85E8DB94D5691DA /* Skills */,
+			);
+			path = CandidateIntake;
+			sourceTree = "<group>";
+		};
+		05B88FE4DC26A665748FA483 /* Admin */ = {
+			isa = PBXGroup;
+			children = (
+				C664A76FD7E6D33526D05C35 /* AdminDashboardView.swift */,
+				68B755190690196736867AC2 /* CandidateDetailView.swift */,
+			);
+			path = Admin;
+			sourceTree = "<group>";
+		};
+		11426137E22336D18FFD5336 = {
+			isa = PBXGroup;
+			children = (
+				9FA95377C837B6EE29F98A2E /* TalentIQ */,
+				C4AB0F159847B448A2F98A37 /* TalentIQTests */,
+				BFC5B8B6503E0AF58D5481C9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1BB7C98AC26E1C3F4EBBD077 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				574999EF31732322B40FE092 /* Brand */,
+				899BB289BD9283C25A9A4472 /* Models */,
+				83C42932DD1CCB06E1EA980B /* Persistence */,
+				695F3F8BD735202B42232BB2 /* Protocols */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		32F5F6B95731F31F0B119A96 /* CheckIn */ = {
+			isa = PBXGroup;
+			children = (
+				DEA22729D308768EEA315BA5 /* EventCheckInView.swift */,
+			);
+			path = CheckIn;
+			sourceTree = "<group>";
+		};
+		4B6ECA85DF156991827BCC6D /* App */ = {
+			isa = PBXGroup;
+			children = (
+				2AE3D4A30F95F0E22271AD23 /* TalentIQApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		50410F067EC47387A2AF9EBA /* Review */ = {
+			isa = PBXGroup;
+			children = (
+				7A6E3352553DAE2D909DA0B5 /* CandidateReviewView.swift */,
+			);
+			path = Review;
+			sourceTree = "<group>";
+		};
+		574999EF31732322B40FE092 /* Brand */ = {
+			isa = PBXGroup;
+			children = (
+				042CCFF080763EB9B7A6ED94 /* JBHuntTheme.swift */,
+			);
+			path = Brand;
+			sourceTree = "<group>";
+		};
+		5D0ECB82D9352457551D3147 /* Resume */ = {
+			isa = PBXGroup;
+			children = (
+				B4E7F3DCDEF7A6A4D71F5197 /* ResumeDocumentProcessor.swift */,
+				42E175B3E3C584DABB457D08 /* ResumeOCRService.swift */,
+				88B8FFEEF3782C91D8912648 /* ResumeProfileParser.swift */,
+				F0EAD0B084194F030382234B /* ResumeTextExtractor.swift */,
+			);
+			path = Resume;
+			sourceTree = "<group>";
+		};
+		608FD328666B46805F2A7CD0 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				05B88FE4DC26A665748FA483 /* Admin */,
+				04186CC0384DE7C389F37914 /* CandidateIntake */,
+				E5153C21E4CDBC37F8206219 /* Interview */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		695F3F8BD735202B42232BB2 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				6424E6E8C7E95D929642742A /* TalentIQRepository.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		7D70138D6A17E93E1AD78498 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				3873EA249326BB4D4B17FE64 /* CandidateInfoView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		83C42932DD1CCB06E1EA980B /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				7D032BF96E370D85BE5B4572 /* LocalTalentIQRepository.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		899BB289BD9283C25A9A4472 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A2A3BF9DCCDB7F2189BE682A /* Domain.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9FA95377C837B6EE29F98A2E /* TalentIQ */ = {
+			isa = PBXGroup;
+			children = (
+				4B6ECA85DF156991827BCC6D /* App */,
+				1BB7C98AC26E1C3F4EBBD077 /* Core */,
+				608FD328666B46805F2A7CD0 /* Features */,
+				FAFEE7AC4FBC4C967058990F /* Services */,
+			);
+			path = TalentIQ;
+			sourceTree = "<group>";
+		};
+		AC22BA066066F6B03388C553 /* Resume */ = {
+			isa = PBXGroup;
+			children = (
+				7145BE91256FAE907CDC97A9 /* ResumeOptionsView.swift */,
+				BE98BD5B6F6D735B5F8216CE /* ResumeReviewView.swift */,
+			);
+			path = Resume;
+			sourceTree = "<group>";
+		};
+		B06C07BBCA95D7DD1D8FCCCF /* Speech */ = {
+			isa = PBXGroup;
+			children = (
+				B568E72D4C106771703B123C /* SpeechTranscriptionService.swift */,
+			);
+			path = Speech;
+			sourceTree = "<group>";
+		};
+		BA856A282504F408EAAA0ED0 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				1BE7E02B303562BE64D24855 /* AudioRecordingService.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		BFC5B8B6503E0AF58D5481C9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				585A85BAC6FD161646E28B70 /* TalentIQ.app */,
+				BBC2879EE7DA35CE4E6F1085 /* TalentIQTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C4AB0F159847B448A2F98A37 /* TalentIQTests */ = {
+			isa = PBXGroup;
+			children = (
+				F97DEB85FDEAD7EEFD9E5024 /* TalentIQTests.swift */,
+			);
+			path = TalentIQTests;
+			sourceTree = "<group>";
+		};
+		D2D9D1B1CC948EB7F0DC029F /* Notes */ = {
+			isa = PBXGroup;
+			children = (
+				B828BA9AB3296E33D68DCE94 /* InterviewNoteGenerator.swift */,
+			);
+			path = Notes;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000003 /* Evaluation */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000002 /* CandidateEvaluationGenerator.swift */,
+			);
+			path = Evaluation;
+			sourceTree = "<group>";
+		};
+		E5153C21E4CDBC37F8206219 /* Interview */ = {
+			isa = PBXGroup;
+			children = (
+				E566ED93ABA76201BC0C03F5 /* InterviewNotesView.swift */,
+				DECC4A9FA4E68E43901264E1 /* InterviewView.swift */,
+			);
+			path = Interview;
+			sourceTree = "<group>";
+		};
+		FAFEE7AC4FBC4C967058990F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				BA856A282504F408EAAA0ED0 /* Audio */,
+				AA0000000000000000000003 /* Evaluation */,
+				D2D9D1B1CC948EB7F0DC029F /* Notes */,
+				5D0ECB82D9352457551D3147 /* Resume */,
+				B06C07BBCA95D7DD1D8FCCCF /* Speech */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		FF760B3CC85E8DB94D5691DA /* Skills */ = {
+			isa = PBXGroup;
+			children = (
+				F3D4129B1F7CDF875B973209 /* SkillsSelectionView.swift */,
+			);
+			path = Skills;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		71260AC3D1BE21E57F95776D /* TalentIQ */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C5E93462E0070E59277D207 /* Build configuration list for PBXNativeTarget "TalentIQ" */;
+			buildPhases = (
+				E249399AECDCC1C1D1BA96D5 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TalentIQ;
+			packageProductDependencies = (
+			);
+			productName = TalentIQ;
+			productReference = 585A85BAC6FD161646E28B70 /* TalentIQ.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FFE5402CC1E47E77870A509E /* TalentIQTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D64F6FF890E334ED3C285DBC /* Build configuration list for PBXNativeTarget "TalentIQTests" */;
+			buildPhases = (
+				9BC031893B9FA4ADDE9F1142 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D6742F993B017216B81D49DF /* PBXTargetDependency */,
+			);
+			name = TalentIQTests;
+			packageProductDependencies = (
+			);
+			productName = TalentIQTests;
+			productReference = BBC2879EE7DA35CE4E6F1085 /* TalentIQTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		01C391DCD2FE86DCFFA73DA7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 3CE202EB725BD5CB58DD8D0A /* Build configuration list for PBXProject "TalentIQ" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 11426137E22336D18FFD5336;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = BFC5B8B6503E0AF58D5481C9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				71260AC3D1BE21E57F95776D /* TalentIQ */,
+				FFE5402CC1E47E77870A509E /* TalentIQTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9BC031893B9FA4ADDE9F1142 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B988339AC9DC87F1EA12DEBC /* TalentIQTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E249399AECDCC1C1D1BA96D5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C1E764A1BA96B1A83E3076B9 /* AdminDashboardView.swift in Sources */,
+				85E771FAA1A9449C08AE9DE8 /* AudioRecordingService.swift in Sources */,
+				E876436298629256ABBF4A5E /* CandidateDetailView.swift in Sources */,
+				7AA9F492CB9E3854376837AD /* CandidateInfoView.swift in Sources */,
+				4E687FC13E928DAF1DC111D0 /* CandidateIntakeState.swift in Sources */,
+				393FE893F27AE53DE558843D /* CandidateIntakeView.swift in Sources */,
+				7E68460E50D1BAF9CD5CC2E2 /* CandidateReviewView.swift in Sources */,
+				BEA248E80D6E5F32254C47D4 /* Domain.swift in Sources */,
+				E33F99D2D7A62F5C8FE06347 /* EventCheckInView.swift in Sources */,
+				C62EABC93C02FFB7BCD8E18B /* InterviewNoteGenerator.swift in Sources */,
+				AB5A77C7D004D388869A0B67 /* InterviewNotesView.swift in Sources */,
+				6584CBE003E332938E665328 /* InterviewView.swift in Sources */,
+				220192EC942F9CE48951F269 /* JBHuntTheme.swift in Sources */,
+				A512D691C70B1E71D6B12356 /* LocalTalentIQRepository.swift in Sources */,
+				8824D8882091A35724139230 /* ResumeDocumentProcessor.swift in Sources */,
+				6CB9A7091C1959F58B05DB2A /* ResumeOCRService.swift in Sources */,
+				898F415E069210D389DE3D51 /* ResumeOptionsView.swift in Sources */,
+				5FA92FD76786CA0CC0883607 /* ResumeProfileParser.swift in Sources */,
+				24E59779C27AD532862C031A /* ResumeReviewView.swift in Sources */,
+				FD97E85E3429CE2CA829C970 /* ResumeTextExtractor.swift in Sources */,
+				91D6B32F9E1B13143A987447 /* SkillsSelectionView.swift in Sources */,
+				613E5E458AFF135891662EA7 /* SpeechTranscriptionService.swift in Sources */,
+				3124D1F9B24E3ED9F2EEB3BF /* TalentIQApp.swift in Sources */,
+				4E932781983CE0DF3E35ED07 /* TalentIQRepository.swift in Sources */,
+				AA0000000000000000000001 /* CandidateEvaluationGenerator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D6742F993B017216B81D49DF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 71260AC3D1BE21E57F95776D /* TalentIQ */;
+			targetProxy = 78946A7B364F3DBA4C691FCC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1AC4262841A9C10C7CC75D98 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_KEY_CFBundleDisplayName = TalentIQ;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.talentiq.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		4DF1F17D4C01DFC71651CDE9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.talentiq.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TalentIQ.app/TalentIQ";
+			};
+			name = Debug;
+		};
+		92D4B41CAAF35D5B39449764 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.talentiq.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TalentIQ.app/TalentIQ";
+			};
+			name = Release;
+		};
+		9D93C84E7EFDD550180DB791 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "TalentIQ scans event codes and paper resumes.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "TalentIQ records interviews when a recruiter starts recording.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "TalentIQ can import candidate resume images.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "TalentIQ transcribes recorded interviews for recruiter notes.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsDocumentBrowser = NO;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DB340C29CDE595A49FDC34FE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_KEY_CFBundleDisplayName = TalentIQ;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.talentiq.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DDDF80E93B56B32E245B637D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "TalentIQ scans event codes and paper resumes.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "TalentIQ records interviews when a recruiter starts recording.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "TalentIQ can import candidate resume images.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "TalentIQ transcribes recorded interviews for recruiter notes.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsDocumentBrowser = NO;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1C5E93462E0070E59277D207 /* Build configuration list for PBXNativeTarget "TalentIQ" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB340C29CDE595A49FDC34FE /* Debug */,
+				1AC4262841A9C10C7CC75D98 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3CE202EB725BD5CB58DD8D0A /* Build configuration list for PBXProject "TalentIQ" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D93C84E7EFDD550180DB791 /* Debug */,
+				DDDF80E93B56B32E245B637D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D64F6FF890E334ED3C285DBC /* Build configuration list for PBXNativeTarget "TalentIQTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4DF1F17D4C01DFC71651CDE9 /* Debug */,
+				92D4B41CAAF35D5B39449764 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 01C391DCD2FE86DCFFA73DA7 /* Project object */;
+}

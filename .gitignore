@@ -1,0 +1,6 @@
+.derivedData/
+.DS_Store
+*.xcuserstate
+xcuserdata/
+tmp/
+.sites-runtime/
