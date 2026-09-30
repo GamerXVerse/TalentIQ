@@ -1,1 +1,1 @@
-{"name":"talentiq-web","private":true,"type":"module","scripts":{"build":"node build.mjs","test":"node --test","check":"node --check dist/server/index.js && node --check dist/client/app.js"}}
+{"name":"talentiq-web","private":true,"type":"module","scripts":{"build":"node build.mjs","test":"node --test","check":"node --check dist/server/index.js && node --check dist/client/app.js"},"dependencies":{"fflate":"0.8.3","pdfjs-dist":"4.10.38"},"devDependencies":{"esbuild":"0.25.12"}}

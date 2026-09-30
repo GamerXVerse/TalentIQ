@@ -1,0 +1,4 @@
+node_modules/
+dist/client/pdf.mjs
+dist/client/pdf.worker.mjs
+talentiq-site.tar.gz

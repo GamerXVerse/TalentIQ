@@ -1,5 +1,11 @@
-import {readFileSync,writeFileSync,mkdirSync} from "node:fs";
+import {readFileSync,writeFileSync,mkdirSync,copyFileSync} from "node:fs";
+import {build} from "esbuild";
+import {fileURLToPath} from "node:url";
 const root=new URL(".",import.meta.url), read=p=>readFileSync(new URL(p,root),"utf8");
-const html=read("dist/client/index.html"), assets={"/":{type:"text/html; charset=utf-8",body:html},"/index.html":{type:"text/html; charset=utf-8",body:html},"/styles.css":{type:"text/css; charset=utf-8",body:read("dist/client/styles.css")},"/app.js":{type:"text/javascript; charset=utf-8",body:read("dist/client/app.js")}};
-const source=read("src/worker.js").replace("/*__STATIC_ASSETS__*/",`const STATIC=${JSON.stringify(assets)};`);
-mkdirSync(new URL("dist/server/",root),{recursive:true});writeFileSync(new URL("dist/server/index.js",root),source);console.log(`Built Worker with ${Object.keys(assets).length} embedded routes.`);
+const html=read("dist/client/index.html");
+copyFileSync(new URL("node_modules/pdfjs-dist/build/pdf.min.mjs",root),new URL("dist/client/pdf.mjs",root));
+copyFileSync(new URL("node_modules/pdfjs-dist/build/pdf.worker.min.mjs",root),new URL("dist/client/pdf.worker.mjs",root));
+const assets={"/":{type:"text/html; charset=utf-8",body:html},"/index.html":{type:"text/html; charset=utf-8",body:html},"/styles.css":{type:"text/css; charset=utf-8",body:read("dist/client/styles.css")},"/app.js":{type:"text/javascript; charset=utf-8",body:read("dist/client/app.js")},"/pdf.mjs":{type:"text/javascript; charset=utf-8",body:read("dist/client/pdf.mjs")},"/pdf.worker.mjs":{type:"text/javascript; charset=utf-8",body:read("dist/client/pdf.worker.mjs")}};
+const source=read("src/worker.js").replace("/*__STATIC_ASSETS__*/",()=>`const STATIC=${JSON.stringify(assets)};`);
+const result=await build({stdin:{contents:source,resolveDir:fileURLToPath(root),sourcefile:"src/worker.js",loader:"js"},bundle:true,platform:"browser",format:"esm",target:"es2022",write:false,minify:true});
+mkdirSync(new URL("dist/server/",root),{recursive:true});writeFileSync(new URL("dist/server/index.js",root),result.outputFiles[0].contents);console.log(`Built Worker with ${Object.keys(assets).length} embedded routes.`);

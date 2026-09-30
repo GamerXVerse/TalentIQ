@@ -11,15 +11,11 @@ Target: WCAG 2.2 Level AA principles.
 - Reduced-motion preferences disable transitions.
 - Core color pairs retained from the earlier measured palette: ink/white 18.73:1, muted/white 6.24:1, error/white 8.00:1, focus/white 6.48:1, ink/yellow 13.69:1.
 
-## Prior browser checks
+## Manual status for this rebuilt app
 
-On September 26, a previous version passed an inspected keyboard path through the candidate form and recruiter queue, an accessibility-tree inspection of labeled controls, and a 200%-zoom-equivalent reflow check. Those results are retained in Git history. The September 30 update added a recruiter sign-in state, PDF upload extraction, spreadsheet grid, consent control, deletion action, and Excel export; those new paths have not received equivalent human-operated checks.
+Not yet executed. The prior checks applied to the old intake-only page and do not count as evidence for this rebuilt full workflow. Before calling the rebuilt app WCAG-conformant, complete and record:
 
-## Manual status for this version
-
-Do not call the current release WCAG-conformant until the following are completed and recorded:
-
-- keyboard-only candidate submission, sign-in, dashboard filtering, grid navigation, detail editing, comparison, approval, deletion confirmation, and dialog close;
+- keyboard-only candidate submission, dashboard filtering, detail editing, comparison, approval, and dialog close;
 - VoiceOver or NVDA announcements and navigation order;
 - actual browser 200% zoom/reflow on intake and recruiter dashboard;
 - contrast audit for all states, including disabled controls and badges;
