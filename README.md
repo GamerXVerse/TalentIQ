@@ -4,6 +4,8 @@ TalentIQ is a universal web app for career-fair candidate check-in and recruiter
 
 Open the [TalentIQ web app](https://talentiq-candidate-check-in.ksasikumarme.chatgpt.site/) or see [web/README.md](web/README.md) for setup and deployment details. The browser app lives entirely in `web/`.
 
+For a capstone walkthrough, use the [presentation runbook](docs/DEMO_RUNBOOK.md).
+
 ## Run checks
 
 ```sh
