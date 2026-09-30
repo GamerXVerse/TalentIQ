@@ -1,5 +1,7 @@
 # Traditional vs. TalentIQ study protocol
 
+> Status: designed, not yet executed. No participants have completed this protocol and no outcome data has been collected. The table and reporting section below are a preregistered plan, not results.
+
 Use synthetic candidate records only. Randomly assign or counterbalance participants so each reviews equivalent record sets once with a traditional resume-and-notes workflow and once with TalentIQ.
 
 ## Measures
@@ -27,3 +29,7 @@ Use synthetic candidate records only. Randomly assign or counterbalance particip
 ## Reporting template
 
 Document participant count and recruiting experience, task order, dataset version, median and range for each time measure, completeness and supported-statement percentages, correction categories, confidence results, accessibility findings, limitations, and all deviations from this protocol.
+
+## Results
+
+Not available. Run the procedure with representative users before making any claim that TalentIQ improves time, completeness, consistency, confidence, usability, or accessibility.

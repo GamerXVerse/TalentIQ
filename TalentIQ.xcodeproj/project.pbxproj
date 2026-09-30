@@ -33,6 +33,7 @@
 		E876436298629256ABBF4A5E /* CandidateDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B755190690196736867AC2 /* CandidateDetailView.swift */; };
 		FD97E85E3429CE2CA829C970 /* ResumeTextExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EAD0B084194F030382234B /* ResumeTextExtractor.swift */; };
 		AA0000000000000000000001 /* CandidateEvaluationGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000002 /* CandidateEvaluationGenerator.swift */; };
+		AA0000000000000000000011 /* WebCheckInImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000012 /* WebCheckInImporter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +75,7 @@
 		F3D4129B1F7CDF875B973209 /* SkillsSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsSelectionView.swift; sourceTree = "<group>"; };
 		F97DEB85FDEAD7EEFD9E5024 /* TalentIQTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalentIQTests.swift; sourceTree = "<group>"; };
 		AA0000000000000000000002 /* CandidateEvaluationGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandidateEvaluationGenerator.swift; sourceTree = "<group>"; };
+		AA0000000000000000000012 /* WebCheckInImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebCheckInImporter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -274,6 +276,14 @@
 			path = Evaluation;
 			sourceTree = "<group>";
 		};
+		AA0000000000000000000013 /* Import */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000012 /* WebCheckInImporter.swift */,
+			);
+			path = Import;
+			sourceTree = "<group>";
+		};
 		E5153C21E4CDBC37F8206219 /* Interview */ = {
 			isa = PBXGroup;
 			children = (
@@ -288,6 +298,7 @@
 			children = (
 				BA856A282504F408EAAA0ED0 /* Audio */,
 				AA0000000000000000000003 /* Evaluation */,
+				AA0000000000000000000013 /* Import */,
 				D2D9D1B1CC948EB7F0DC029F /* Notes */,
 				5D0ECB82D9352457551D3147 /* Resume */,
 				B06C07BBCA95D7DD1D8FCCCF /* Speech */,
@@ -410,6 +421,7 @@
 				3124D1F9B24E3ED9F2EEB3BF /* TalentIQApp.swift in Sources */,
 				4E932781983CE0DF3E35ED07 /* TalentIQRepository.swift in Sources */,
 				AA0000000000000000000001 /* CandidateEvaluationGenerator.swift in Sources */,
+				AA0000000000000000000011 /* WebCheckInImporter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

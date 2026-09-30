@@ -1,8 +1,16 @@
 # TalentIQ
 
-TalentIQ is an iOS 17+ career-fair candidate intake and recruiter review prototype, with a responsive web intake companion in `web/`.
+TalentIQ's primary deliverable is one responsive browser application for candidate check-in and recruiter review. Candidates reach the intake from a QR code with no installation; recruiters use the dashboard in the same site. Both surfaces use one shared D1 database, with resume files stored in R2.
 
-## iOS app
+## Web application (primary)
+
+- `/#intake` - proposal-aligned candidate check-in
+- `/#dashboard` - recruiter capture, search, filters, comparison, workflow status, verified AI drafts, and CSV export
+- `/api/*` - shared Worker API
+
+The source is in `web/`. Run `cd web && npm test && npm run check` for its automated verification. Hosted AI generation requires a server-side `OPENAI_API_KEY`; `OPENAI_MODEL` defaults to `gpt-4.1-mini`.
+
+## iOS app (earlier prototype/reference)
 
 1. Install XcodeGen: `brew install xcodegen`.
 2. Run `xcodegen generate`.
@@ -15,12 +23,8 @@ xcodebuild -project TalentIQ.xcodeproj -scheme TalentIQ -destination 'platform=i
 xcodebuild -project TalentIQ.xcodeproj -scheme TalentIQTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro' test CODE_SIGNING_ALLOWED=NO
 ```
 
-## Web intake
-
-Open `web/dist/index.html`, or serve `web/dist` with any static web server. Add `?event=UARK2026` to prefill an event code for a QR link.
-
-The browser prototype stores submissions in that browser and lets the candidate download a JSON handoff record. A production rollout still needs an authenticated shared API and database; see `docs/ROADMAP.md`.
+The native project remains in the repository to preserve working research and implementation ideas. It is no longer the primary product and should not receive new product features.
 
 ## Responsible-use boundary
 
-The on-device candidate draft generator is deterministic and source-grounded. It never scores, ranks, advances, or rejects candidates. Recruiter approval is recorded explicitly. Use synthetic data unless the sponsor authorizes another dataset.
+The web summary service receives only candidate profile, resume, and recruiter notes. Strict output validation blocks uncited statements, protected-characteristic language, and ranking, scoring, advance/reject, or hiring recommendations before display. Recruiter approval is tracked separately from record status. Use synthetic data unless the sponsor authorizes another dataset.

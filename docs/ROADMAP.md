@@ -1,14 +1,14 @@
-# Remaining production work
+# Product direction and remaining work
 
-The repository now contains a functional browser intake and a richer iOS recruiter MVP. Cross-device synchronization is intentionally not represented as complete: it requires infrastructure and deployment decisions outside a safe local prototype.
+TalentIQ is one responsive web application. Candidate intake, recruiter capture, review, comparison, workflow updates, AI draft verification, and export live in the same browser product and share D1/R2 persistence.
 
-## Shared backend acceptance criteria
+The Swift iOS application remains in the repository only as an earlier prototype/reference. Retaining it prevents loss of working research; it is not a second primary front end and should not receive new features.
 
-- Authenticated recruiter access and least-privilege service roles.
-- Candidate web submissions and iOS recruiter reads use one versioned API schema.
-- Encryption in transit and at rest, retention/deletion rules, audit events, conflict handling, and offline retry.
-- Resume upload scanning and private object storage; never place candidate documents in public buckets.
-- Synthetic-data load and security tests before any approved real-data pilot.
-- Repository conformance tests run against both local and remote implementations.
+## Remaining work
 
-`TalentIQRepository` is the seam for a future remote implementation. The static web prototype exports the same core fields as a JSON handoff, but browser-local storage is not cross-device sync.
+- Configure the hosted `OPENAI_API_KEY` and execute the live-model evaluation in `AI_EVALUATION.md`.
+- Add role-specific recruiter authentication before any non-synthetic pilot. Deployment access policy is not a replacement for application authorization.
+- Extract searchable text from uploaded PDF resumes. The file is stored in R2, but only plain-text uploads are immediately available to summarization.
+- Define retention, deletion, audit, malware scanning, and incident-handling policy before sponsor-approved data.
+- Run the manual accessibility checks and comparative study still explicitly marked unexecuted.
+- Applicant-tracking-system integration remains outside the MVP scope.

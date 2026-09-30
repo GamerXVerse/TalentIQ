@@ -15,6 +15,8 @@ struct CandidateQueueView: View {
     @State private var comparisonIDs = Set<UUID>()
     @State private var showingComparison = false
     @State private var exportFile: CandidateCSVDocument?
+    @State private var showingImporter = false
+    @State private var importMessage: String?
 
     private var shown: [Candidate] {
         candidates.filter { candidate in
@@ -35,10 +37,13 @@ struct CandidateQueueView: View {
                     ForEach(CandidateStatus.allCases, id: \.self) { Text($0.title).tag(Optional($0)) }
                 }.pickerStyle(.menu)
                 HStack {
+                    Button("IMPORT WEB JSON") { showingImporter = true }
+                        .accessibilityHint("Choose a JSON record downloaded from the TalentIQ web check-in")
                     Button("COMPARE (\(comparisonIDs.count))") { showingComparison = true }.disabled(comparisonIDs.count < 2)
                     Spacer()
                     Button("EXPORT CSV") { exportFile = CandidateCSVDocument(candidates: shown) }.disabled(shown.isEmpty)
                 }.font(.caption.weight(.bold))
+                if let importMessage { Text(importMessage).font(.caption).foregroundStyle(.secondary) }
             }
             Section("Candidates \(shown.count)") {
                 ForEach(shown) { candidate in
@@ -64,10 +69,31 @@ struct CandidateQueueView: View {
         .fileExporter(isPresented: Binding(get: { exportFile != nil }, set: { if !$0 { exportFile = nil } }), document: exportFile, contentType: .commaSeparatedText, defaultFilename: "TalentIQ-Candidates") { result in
             if case .failure(let error) = result { errorMessage = error.localizedDescription }
         }
+        .fileImporter(isPresented: $showingImporter, allowedContentTypes: [.json], allowsMultipleSelection: true) { result in
+            importWebRecords(result)
+        }
     }
     private func reload() {
         do { candidates = try repository.candidates(); comparisonIDs = comparisonIDs.intersection(Set(candidates.map(\.id))); errorMessage = nil }
         catch { errorMessage = error.localizedDescription }
+    }
+    private func importWebRecords(_ result: Result<[URL], Error>) {
+        do {
+            let urls = try result.get()
+            var imported = 0
+            for url in urls {
+                let scoped = url.startAccessingSecurityScopedResource()
+                defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+                let candidate = try WebCheckInImporter().candidate(from: Data(contentsOf: url))
+                try repository.update(candidate)
+                imported += 1
+            }
+            importMessage = "Imported \(imported) web check-in\(imported == 1 ? "" : "s"). Re-importing the same record updates it."
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+            importMessage = nil
+        }
     }
 }
 

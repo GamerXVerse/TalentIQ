@@ -84,15 +84,15 @@ private extension TargetRole {
         switch self {
         case .softwareEngineeringIntern:
             return [
-                .init(statement: "Shows a student-level technical foundation through programming, coursework, or software projects.", keywords: ["python", "swift", "java", "javascript", "react", "software", "computer science", "programming", "github"]),
-                .init(statement: "Provides evidence of problem solving and learning.", keywords: ["problem", "research", "learn", "hackathon", "capstone"]),
-                .init(statement: "Provides evidence of communication or collaboration.", keywords: ["team", "collabor", "communication", "leadership", "club"])
+                .init(statement: "Shows a student-level technical foundation through a programming language, coursework, or hands-on software projects.", keywords: ["python", "swift", "java", "javascript", "typescript", "c++", "c#", "programming language", "software development", "computer science", "software engineering", "computer engineering", "coursework", "software project", "open-source", "github"]),
+                .init(statement: "Provides evidence of problem solving, initiative, or willingness to learn.", keywords: ["problem solving", "problem-solving", "research", "learn", "curiosity", "initiative", "ownership", "hackathon", "coding competition", "capstone"]),
+                .init(statement: "Provides evidence of communicating ideas or collaborating in a team environment.", keywords: ["team", "collabor", "communication", "technical review", "present", "demonstrat", "leadership", "technical club", "organization"])
             ]
         case .productOwner:
             return [
-                .init(statement: "Provides evidence of product thinking, requirements work, or understanding users and outcomes.", keywords: ["product", "requirements", "user research", "customer", "business analysis", "backlog"]),
-                .init(statement: "Provides evidence of prioritization or decision-making.", keywords: ["priorit", "decision", "roadmap", "agile", "scrum"]),
-                .init(statement: "Provides evidence of cross-functional communication and collaboration.", keywords: ["stakeholder", "cross-functional", "engineer", "designer", "communication", "leadership"])
+                .init(statement: "Provides evidence of product thinking, requirements work, or understanding users, business needs, and desired outcomes.", keywords: ["product owner", "product management", "product development", "digital product", "requirements", "user research", "customer research", "customer feedback", "business need", "business analysis", "business process", "backlog", "outcome", "process improvement"]),
+                .init(statement: "Provides evidence of organizing priorities, evaluating competing needs, or making decisions with incomplete information.", keywords: ["priorit", "competing needs", "decision-making", "decision making", "roadmap", "agile", "scrum", "feature"]),
+                .init(statement: "Provides evidence of communicating and collaborating across technical and business roles.", keywords: ["stakeholder", "cross-functional", "cross functional", "software engineer", "design team", "designer", "analyst", "business partner", "technical team", "communication", "project leadership"])
             ]
         }
     }

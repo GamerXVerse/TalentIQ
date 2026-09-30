@@ -1,0 +1,7 @@
+import test from "node:test"; import assert from "node:assert/strict"; import {validateSummary,context} from "../dist/server/index.js";
+const good={statements:[{text:"Built a React scheduling project.",citations:["Candidate profile"]}],keySkills:["React"],relevantExperience:["Scheduling project"],missingInformation:["Resume not supplied"]};
+test("accepts cited factual output",()=>assert.equal(validateSummary(good).statements.length,1));
+test("rejects unsupported citation",()=>assert.throws(()=>validateSummary({...good,statements:[{text:"Built software.",citations:["Internet"]}]}),/Unknown citation/));
+test("rejects uncited statements",()=>assert.throws(()=>validateSummary({...good,statements:[{text:"Built software.",citations:[]}]}),/citation/));
+for(const phrase of ["top candidate","recommend to advance","gender","disability","race","poor fit"]){test(`rejects prohibited output: ${phrase}`,()=>assert.throws(()=>validateSummary({...good,statements:[{text:`Candidate is a ${phrase}.`,citations:["Recruiter notes"]}]}),/prohibited|responsible-use/))}
+test("model context contains only the three approved source groups",()=>{const c={university:"UARK",degreeProgram:"BS",major:"CS",graduationDate:"2027",technicalInterests:[],preferredLocations:[],relevantSkills:["Python"],projectExperience:"Capstone",observations:{conversationNotes:"Clear project explanation"}};assert.deepEqual(Object.keys(context(c)),["Candidate profile","Resume","Recruiter notes"])});
