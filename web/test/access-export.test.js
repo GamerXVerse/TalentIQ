@@ -10,6 +10,7 @@ const env = {
       return {
         bind() { return this; },
         run: async () => ({}),
+        first: async () => ({ count: 0 }),
         all: async () => ({ results: [{
           id: "candidate-1", first_name: "Ava", last_name: "Lee", email: "ava@example.org",
           university: "University", degree_program: "BS", major: "CS", graduation_date: "2027-05",
@@ -30,7 +31,7 @@ test("candidate records require an allowlisted signed-in recruiter", async () =>
   const outsider = await worker.fetch(new Request("https://example.com/api/export.xlsx", { headers: { "oai-authenticated-user-email": "other@example.org" } }), env);
   assert.equal(outsider.status, 403);
   const session = await worker.fetch(new Request("https://example.com/api/recruiter-session", { headers: { "oai-authenticated-user-email": "recruiter@example.org" } }), env);
-  assert.deepEqual(await session.json(), { authorized: true });
+  assert.deepEqual(await session.json(), { authorized: true, email: "recruiter@example.org", setupRequired: true, setupAvailable: false });
 });
 
 test("AI cannot receive a candidate record without opt-in", async () => {
@@ -44,7 +45,7 @@ test("AI cannot receive a candidate record without opt-in", async () => {
     }) }) }
   };
   const response = await worker.fetch(new Request("https://example.com/api/candidates/candidate-1/summary", {
-    method: "POST", headers: { "oai-authenticated-user-email": "recruiter@example.org", "content-type": "application/json" }, body: "{}"
+    method: "POST", headers: { "oai-authenticated-user-email": "recruiter@example.org", "content-type": "application/json", "origin": "https://example.com" }, body: "{}"
   }), noConsent);
   assert.equal(response.status, 403);
   assert.match((await response.json()).error, /did not opt in/);

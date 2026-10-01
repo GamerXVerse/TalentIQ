@@ -5,7 +5,7 @@ TalentIQ is a web-only capstone MVP. Open the [live app](https://talentiq-candid
 ## Before presenting
 
 1. Open the candidate page and the **Recruiter review** page in separate browser tabs.
-2. On Recruiter review, use **Sign in with ChatGPT** with an account on the recruiter allowlist. Confirm that the candidate table loads. If access is denied, ask the TalentIQ owner to approve the account before presenting.
+2. On Recruiter review, sign in with the owner's TalentIQ email and password. For the first use only, select the owner setup link, verify the existing owner account, and choose a password. Confirm that the candidate table loads. If access is denied, ask the TalentIQ owner to approve the account before presenting.
 3. Keep a synthetic candidate profile handy. The demo event code is `DEMO`. Do not use an actual person's resume or contact details.
 4. If you plan to show AI-generated drafts, first configure the hosted `GROQ_API_KEY` and complete the live-model evaluation in [AI_EVALUATION.md](AI_EVALUATION.md). Without that key, draft generation correctly reports that it is unavailable. Do not present it as a working live-AI feature until verified.
 

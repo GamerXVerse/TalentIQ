@@ -1,11 +1,11 @@
 import {zipSync,strToU8} from "fflate";
+import {session,sessionStatus,setup,login,logout,requireSameOrigin} from "./auth.js";
 const STATUSES=["New","Reviewed","Follow-Up","Interview Requested","Closed"], APPROVALS=["Approved","Rejected"], SOURCES=["Candidate profile","Resume","Recruiter notes"];
 const PROTECTED=/\b(age|aged|young|old|elderly|gender|male|female|woman|man|race|racial|ethnicity|ethnic|religion|religious|disability|disabled|pregnan|marital|national origin|sexual orientation)\b/i;
 const DECISION=/\b(rank|score|rating|recommend(ed|ation)? (to )?(advance|reject|hire)|advance candidate|reject candidate|best candidate|top candidate|poor fit|good fit)\b/i;
 /*__STATIC_ASSETS__*/
 const clean=(v,n=4000)=>String(v??"").trim().slice(0,n), list=(v,n=20)=>[...new Set((Array.isArray(v)?v:String(v??"").split(",")).map(x=>clean(x,100)).filter(Boolean))].slice(0,n);
 const parse=(v,f)=>{try{return JSON.parse(v)}catch{return f}}, now=()=>new Date().toISOString();
-function recruiterEmail(req,env){const email=clean(req.headers.get("oai-authenticated-user-email"),200).toLowerCase();const allowed=String(env.RECRUITER_EMAILS||"").split(",").map(x=>x.trim().toLowerCase()).filter(Boolean);return email&&allowed.includes(email)?email:null}
 const forbidden=()=>json({error:"Recruiter sign-in is required to view or change candidate records."},403);
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff",...headers}});
 const select=`c.*,o.recruiter_name,o.conversation_notes,o.areas_discussed,o.follow_up_questions,o.recommended_next_steps,o.candidate_questions FROM candidates c LEFT JOIN recruiter_observations o ON o.candidate_id=c.id`;
@@ -81,10 +81,14 @@ async function route(req,env){
   const u=new URL(req.url),p=u.pathname,m=req.method;
   try{
     if(p==="/api/health"&&m==="GET")return json({ok:true,database:"D1",uploads:"R2",aiConfigured:Boolean(env.GROQ_API_KEY)});
-    if(p==="/api/recruiter-session"&&m==="GET")return json({authorized:Boolean(recruiterEmail(req,env))});
+    if(p==="/api/recruiter-session"&&m==="GET")return sessionStatus(req,env);
+    if(p==="/api/auth/login"&&m==="POST")return login(req,env);
+    if(p==="/api/auth/setup"&&m==="POST")return setup(req,env);
+    if(p==="/api/auth/logout"&&m==="POST")return logout(req,env);
     if(p==="/api/candidates"&&m==="POST")return create(req,env);
-    const actor=recruiterEmail(req,env);
+    const actor=(await session(req,env))?.email;
     if(p.startsWith("/api/")&&!actor)return forbidden();
+    if(p.startsWith("/api/")&&!['GET','HEAD'].includes(m)){const blocked=requireSameOrigin(req);if(blocked)return blocked}
     if(p==="/api/candidates"&&m==="GET")return getList(req,env);
     if(p==="/api/export.csv"&&m==="GET"){const result=await csv(env);await audit(env,null,actor,"csv_exported");return result}
     if(p==="/api/export.xlsx"&&m==="GET"){const result=await xlsx(env);await audit(env,null,actor,"excel_exported");return result}
