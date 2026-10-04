@@ -1,8 +1,8 @@
 # TalentIQ
 
-TalentIQ is a universal web app for career-fair candidate check-in and recruiter review. Candidates use the public form from a QR code; approved recruiters sign in with a TalentIQ email and password to review records, capture notes, verify AI-assisted drafts and interview questions, compare candidates, and download an Excel workbook. No iOS app or Xcode setup is required.
+TalentIQ is a mobile-first J.B. Hunt career-fair application. Candidates use QR or event code **12345**, create an account, scan or upload a resume, and check in. Interviewers use a searchable queue and pipeline, capture notes and consented audio, review cited Groq interview questions, and export an Excel workbook. No iOS app or Xcode setup is required.
 
-Open the [TalentIQ web app](https://talentiq-candidate-check-in.ksasikumarme.chatgpt.site/) or see [web/README.md](web/README.md) for setup and deployment details. The browser app lives entirely in `web/`.
+The redesigned application lives in `web/`. See [web/VERCEL-SETUP.md](web/VERCEL-SETUP.md) for Neon database setup and Vercel deployment. The original hosted Sites application is a previous version; local changes do not update it automatically.
 
 For a capstone walkthrough, use the [presentation runbook](docs/DEMO_RUNBOOK.md).
 
@@ -16,4 +16,4 @@ npm test
 npm run check
 ```
 
-The public demo currently accepts only event code `DEMO`. Recruiter access is limited to the configured email allowlist. The owner must complete a one-time verified password setup before password sign-in is active. Live AI requires a server-side Groq key and candidate opt-in; do not submit real candidate data until the sponsor approves retention, deletion, and security procedures. Outstanding validation is tracked in [docs/ROADMAP.md](docs/ROADMAP.md).
+Run `npm run dev:demo` inside `web` for a local preview with explicitly synthetic data. Production uses Neon Postgres and server-only Groq credentials; no database or secrets are bundled in the ZIP. Follow the deployment guide’s live phone/Groq verification before collecting real candidate records.

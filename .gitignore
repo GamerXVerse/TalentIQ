@@ -7,3 +7,10 @@ tmp/
 OPEN_TALENTIQ.html
 TalentIQ Finished Web App.webloc
 TalentIQ-Web-Finished-Source.zip
+**/node_modules/
+**/.local-db/
+**/.env.local
+**/.env.production
+**/.vercel/
+TalentIQ-Career-Fair-Vercel.zip
+TalentIQ-Redesign-Source.zip

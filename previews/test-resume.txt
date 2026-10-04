@@ -1,0 +1,4 @@
+Casey Example
+Computer Science, Test University
+Built a React fleet scheduling project using PostgreSQL.
+Skills: React, JavaScript, SQL.

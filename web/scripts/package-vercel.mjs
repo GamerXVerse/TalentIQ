@@ -1,0 +1,17 @@
+import {mkdirSync,cpSync,copyFileSync,readFileSync,writeFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+const out=resolve('../vercel-drop-web');mkdirSync(out,{recursive:true});
+cpSync('dist/client',resolve(out,'public'),{recursive:true});mkdirSync(resolve(out,'api'),{recursive:true});mkdirSync(resolve(out,'server'),{recursive:true});mkdirSync(resolve(out,'scripts'),{recursive:true});
+copyFileSync('dist/server/index.js',resolve(out,'worker.js'));
+for(const f of ['database.js','schema.sql'])copyFileSync(`server/${f}`,resolve(out,'server',f));
+writeFileSync(resolve(out,'server/handler.js'),readFileSync('server/handler.js','utf8').replace("'../dist/server/index.js'","'../worker.js'"));
+writeFileSync(resolve(out,'api/index.js'),"export {default} from '../server/handler.js';\nexport const config={maxDuration:60};\n");
+for(const f of ['migrate.mjs','provision-interviewer.mjs'])copyFileSync(`scripts/${f}`,resolve(out,'scripts',f));
+writeFileSync(resolve(out,'scripts/prepare.mjs'),"if(process.env.DATABASE_URL||process.env.POSTGRES_URL){process.env.DATABASE_URL ||= process.env.POSTGRES_URL;await import('./migrate.mjs');}else{console.log('DATABASE_URL missing: UI will deploy with check-in disabled. Connect Neon and redeploy.');}\n");
+writeFileSync(resolve(out,'package.json'),JSON.stringify({name:'talentiq-career-fair',version:'2.0.0',private:true,type:'module',engines:{node:'24.x'},scripts:{build:'node scripts/prepare.mjs','db:migrate':'node --env-file-if-exists=.env.local scripts/migrate.mjs','interviewer:add':'node --env-file=.env.local scripts/provision-interviewer.mjs'},dependencies:{'@neondatabase/serverless':'1.0.2'}},null,2));
+const policy="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+writeFileSync(resolve(out,'vercel.json'),JSON.stringify({$schema:'https://openapi.vercel.sh/vercel.json',framework:null,buildCommand:'node scripts/prepare.mjs',outputDirectory:'public',functions:{'api/index.js':{maxDuration:60}},rewrites:[{source:'/api/(.*)',destination:'/api/index.js'}],headers:[{source:'/(.*)',headers:[{key:'Content-Security-Policy',value:policy},{key:'X-Content-Type-Options',value:'nosniff'},{key:'Referrer-Policy',value:'strict-origin-when-cross-origin'},{key:'Permissions-Policy',value:'camera=(self), microphone=(self), geolocation=()'}]},{source:'/(app.js|styles.css|index.html|fonts.css)',headers:[{key:'Cache-Control',value:'no-cache'}]}]},null,2));
+copyFileSync('VERCEL-SETUP.md',resolve(out,'README.md'));
+writeFileSync(resolve(out,'.env.example'),'DATABASE_URL=\nGROQ_API_KEY=\nRECRUITER_EMAILS=\nRECRUITER_SETUP_TOKEN=\n# Optional overrides\nGROQ_MODEL=openai/gpt-oss-20b\nGROQ_VISION_MODEL=qwen/qwen3.8-27b\nGROQ_AUDIO_MODEL=whisper-large-v3-turbo\n');
+writeFileSync(resolve(out,'.gitignore'),'.env.local\n.env.production\n.vercel/\nnode_modules/\n');
+console.log('Vercel package prepared in '+out+'. No credentials, local database, or demo records copied.');

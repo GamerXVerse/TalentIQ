@@ -1,19 +1,21 @@
 # TalentIQ web application
 
-TalentIQ is one responsive browser application. Candidates open check-in from a QR code with no installation. Approved recruiters sign in with TalentIQ email and password to a spreadsheet-style dashboard and download a full Excel workbook. Both surfaces share D1; resume files are stored in R2.
+TalentIQ is a mobile-first J.B. Hunt career-fair application. Candidates join by QR or event code **12345**, create an account, photograph or upload a resume, review their details, and check in. Interviewers get a searchable queue, pipeline, private resume access, conversation notes, cited Groq interview briefs, and Excel export. Both roles have consent-based audio transcription.
+
+For the deployable package, use [VERCEL-SETUP.md](VERCEL-SETUP.md). The Vercel adapter uses **Neon Postgres** for accounts, candidate records, and private resume files. The original Cloudflare Worker code is retained, but Vercel does not automatically provide its former D1/R2 bindings.
 
 ## Routes
 
 - `/#intake` - candidate check-in
-- `/#dashboard` - recruiter grid, notes, comparison, status, verified summaries and questions, and Excel export
+- `/#dashboard` - interviewer queue, pipeline, notes, stages, reviewed briefs and questions, and Excel export
 - `/api/*` - shared server API
 
 ## Verification
 
-Run `npm ci && npm run build && npm test && npm run check`. Production publishing applies the immutable D1 migrations in `drizzle/` and provisions the logical `DB` and `UPLOADS` bindings declared in `.openai/hosting.json`.
+Run `npm ci`, `npm run build`, `npm test`, and `npm run check`. Meaningful integration tests use embedded real Postgres and simulated Groq responses. `npm run package:vercel` writes the standalone deployment package to `../vercel-drop-web`.
 
-Set `RECRUITER_EMAILS` to a comma-separated email allowlist and `ALLOWED_EVENT_CODES` to the accepted event codes in Sites runtime settings. Both fail closed when unset. Site access can be public for candidate check-in; record APIs require an allowlisted recruiter with a valid TalentIQ session. The demo deployment accepts only event code `DEMO` until a real event is approved.
+Run `npm run dev` for a persistent local Postgres preview at `http://localhost:4175`. `npm run dev:demo` additionally seeds **synthetic** preview records and the local-only interviewer account `interviewer@example.test` / `Local-preview-12345`. The local database lives in ignored `.local-db/`. Demo records and that database are never included in the deployment ZIP. No AI responses are faked in the running preview.
 
-The first recruiter account is created through the one-time owner setup shown on Recruiter review. The owner verifies their existing identity once, chooses a password (12–128 characters), and then uses email/password for subsequent sign-ins. Passwords are salted and PBKDF2-hashed in D1; sessions use 12-hour HttpOnly, Secure cookies. Five failed attempts temporarily lock an account for 15 minutes. Do not create public self-registration for private candidate records. Password recovery and additional recruiter provisioning are not yet implemented; the owner must arrange these before broader rollout.
+Vercel needs `DATABASE_URL`, `GROQ_API_KEY`, `RECRUITER_EMAILS`, and `RECRUITER_SETUP_TOKEN`. The build initializes the database. The first interviewer uses the allowlisted email and private setup token to create a password. Additional interviewers can be provisioned with `scripts/provision-interviewer.mjs`. Candidate and interviewer sessions are separate; private APIs enforce the interviewer allowlist. Candidate email verification, self-service password reset, and SSO are not implemented.
 
-AI generation requires candidate opt-in and the server-side secret `GROQ_API_KEY`. `GROQ_MODEL` defaults to `openai/gpt-oss-20b`. The browser never receives the credential. Searchable PDF text is extracted in the browser before upload; scanned PDFs need a text-based replacement. Do not use real candidate data until retention, deletion, and sponsor security procedures are approved.
+AI requires the relevant consent and a server-side Groq key. Readable PDF text is extracted locally; scanned PDFs (up to three pages) and photos use the configurable Groq vision model. Audio uses Whisper. Raw audio stays in the current browser session; reviewed transcripts can be saved in notes. See the setup guide for a required real-phone and live-Groq smoke test before event use.

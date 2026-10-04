@@ -1,0 +1,58 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import worker from '../dist/server/index.js';
+import {localDatabase} from '../server/local-database.js';
+const origin='https://talentiq.test';
+const req=(path,method='GET',data,cookie='',extra={})=>new Request(origin+path,{method,headers:{origin,'content-type':'application/json',...(cookie?{cookie}:{}),...extra},body:data===undefined?undefined:JSON.stringify(data)});
+const cookie=r=>r.headers.get('set-cookie')?.split(';')[0]||'';
+test('persistent Postgres career-fair flow isolates candidates, protects files, saves notes and enforces consent',async()=>{
+ const {pg,DB,UPLOADS}=await localDatabase();
+ const env={DB,UPLOADS,VERCEL_RUNTIME:true,REQUIRE_CANDIDATE_AUTH:true,RECRUITER_EMAILS:'recruiter@jbhunt.test',RECRUITER_SETUP_TOKEN:'test-setup-secret',GROQ_API_KEY:'test-only-provider-key'};
+ const originalFetch=globalThis.fetch;
+ let calls=[];
+ globalThis.fetch=async(url,options)=>{calls.push({url,options});if(url.includes('/audio/transcriptions'))return new Response(JSON.stringify({text:'I developed a route planning project using Python.'}),{headers:{'content-type':'application/json'}});const x=JSON.parse(options.body);const extraction=x.messages[0].content.startsWith('Extract');return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(extraction?{resumeText:'Alex Smith\nReact scheduling project',fields:{firstName:'Alex',lastName:'Smith',major:'Computer Science',relevantSkills:['React']},warnings:[]}:{statements:[{text:'Built a scheduling project.',citations:['Candidate profile']}],interviewQuestions:[{text:'How did you validate your scheduling project?',citations:['Candidate profile']}],keySkills:['React'],relevantExperience:['Scheduling project'],missingInformation:[]})}}]}),{headers:{'content-type':'application/json'}});};
+ try{
+  let r=await worker.fetch(req('/api/health'),env);assert.equal((await r.json()).database.connected,true);
+  assert.equal((await worker.fetch(req('/api/event?code=12345'),env)).status,200);
+  assert.equal((await worker.fetch(req('/api/event?code=54321'),env)).status,400);
+  assert.equal((await worker.fetch(req('/api/resume/parse','POST',{aiConsent:true}),env)).status,401);
+  r=await worker.fetch(req('/api/candidate-auth/register','POST',{email:'alex@example.test',password:'Strong-test-password',eventCode:'12345'}),env);assert.equal(r.status,200);const alex=cookie(r);assert.match(r.headers.get('set-cookie'),/HttpOnly; Secure; SameSite=Lax/);
+  r=await worker.fetch(req('/api/candidate-auth/register','POST',{email:'other@example.test',password:'Strong-test-password',eventCode:'12345'}),env);const other=cookie(r);
+  const resume={name:'resume.txt',base64:Buffer.from('Alex Smith\nBuilt a React scheduling project.').toString('base64')};
+  const data={firstName:'Alex',lastName:'Smith',email:'alex@example.test',university:'University',degreeProgram:'Bachelor’s',major:'CS',graduationDate:'2027-05',desiredFunction:'Software',eventCode:'12345',resume,relevantSkills:['React'],projectExperience:'Built a scheduling project.',aiConsent:'yes'};
+  assert.equal((await worker.fetch(req('/api/candidates','POST',data,other),env)).status,401);
+  assert.equal((await worker.fetch(req('/api/candidates','POST',data,alex,{origin:'https://evil.test'}),env)).status,403);
+  r=await worker.fetch(req('/api/candidates','POST',data,alex),env);assert.equal(r.status,201);const {id}=await r.json();
+  r=await worker.fetch(req('/api/candidates','POST',data,alex),env);assert.equal(r.status,200);assert.equal((await r.json()).id,id);
+  assert.equal((await DB.prepare('SELECT count(*) AS count FROM candidates').first()).count,1);
+  assert.notEqual((await DB.prepare('SELECT password_hash FROM candidate_accounts WHERE email=?').bind(data.email).first()).password_hash,'Strong-test-password');
+  assert.equal((await worker.fetch(req(`/api/candidates/${id}`,'GET',undefined,alex),env)).status,403);
+  assert.equal((await worker.fetch(req(`/api/candidates/${id}/resume`,'GET',undefined,alex),env)).status,403);
+  assert.equal((await(await worker.fetch(req('/api/my-check-in','GET',undefined,other),env)).json()).checkIn,null);
+  const own=(await(await worker.fetch(req('/api/my-check-in','GET',undefined,alex),env)).json()).checkIn;assert.equal(own.id,id);assert.equal(own.observations,undefined);
+  assert.equal((await worker.fetch(req('/api/resume/parse','POST',{aiConsent:false,text:'Resume'},alex),env)).status,403);
+  r=await worker.fetch(req('/api/resume/parse','POST',{aiConsent:true,images:['data:image/jpeg;base64,/9j/']},alex),env);assert.equal(r.status,200);assert.equal((await r.json()).fields.firstName,'Alex');assert.equal(JSON.parse(calls.at(-1).options.body).model,'qwen/qwen3.8-27b');
+  assert.equal((await worker.fetch(req('/api/auth/setup','POST',{email:'recruiter@jbhunt.test',password:'Strong-recruiter-password',setupToken:'wrong'}),env)).status,403);
+  assert.equal((await worker.fetch(req('/api/recruiter-session','GET',undefined,'',{'oai-authenticated-user-email':'recruiter@jbhunt.test'}),env)).status,200);
+  assert.equal((await(await worker.fetch(req('/api/recruiter-session','GET',undefined,'',{'oai-authenticated-user-email':'recruiter@jbhunt.test'}),env)).json()).authorized,false);
+  r=await worker.fetch(req('/api/auth/setup','POST',{email:'recruiter@jbhunt.test',password:'Strong-recruiter-password',setupToken:'test-setup-secret'}),env);assert.equal(r.status,200);const recruiter=cookie(r);
+  r=await worker.fetch(req('/api/candidates','GET',undefined,recruiter),env);assert.equal((await r.json()).candidates.length,1);
+  r=await worker.fetch(req(`/api/candidates/${id}/resume`,'GET',undefined,recruiter),env);assert.equal(r.status,200);assert.match(await r.text(),/React/);
+  r=await worker.fetch(req(`/api/candidates/${id}`,'PATCH',{observations:{conversationNotes:'Discussed route planning.',recruiterName:'Recruiter'},recordStatus:'Follow-Up'},recruiter),env);assert.equal(r.status,200);assert.equal((await r.json()).candidate.observations.conversationNotes,'Discussed route planning.');
+  r=await worker.fetch(req(`/api/candidates/${id}/summary`,'POST',{},recruiter),env);assert.equal(r.status,200);assert.equal((await r.json()).summary.interviewQuestions.length,1);
+  r=await worker.fetch(req(`/api/candidates/${id}/review`,'POST',{action:'Approved'},recruiter),env);assert.equal((await r.json()).candidate.approvalStatus,'Approved');
+  const recording={mime:'audio/webm',base64:Buffer.alloc(150).toString('base64'),consent:true,candidateId:id};
+  r=await worker.fetch(req('/api/transcribe','POST',recording,recruiter),env);assert.equal(r.status,200);assert.match((await r.json()).text,/Python/);
+  await DB.prepare('UPDATE candidates SET ai_consent=0 WHERE id=?').bind(id).run();const before=calls.length;
+  assert.equal((await worker.fetch(req(`/api/candidates/${id}/summary`,'POST',{},recruiter),env)).status,403);
+  assert.equal((await worker.fetch(req('/api/transcribe','POST',recording,recruiter),env)).status,403);assert.equal(calls.length,before);
+  await worker.fetch(req('/api/candidate-auth/logout','POST',{},alex),env);assert.equal((await(await worker.fetch(req('/api/candidate-auth/session','GET',undefined,alex),env)).json()).authorized,false);
+  r=await worker.fetch(req('/api/candidate-auth/login','POST',{email:data.email,password:'Strong-test-password'}),env);assert.equal(r.status,200);
+ }finally{globalThis.fetch=originalFetch;await pg.close();}
+});
+test('health reports a missing database honestly and API errors stay structured',async()=>{
+ let r=await worker.fetch(req('/api/health'),{GROQ_API_KEY:'configured'});const h=await r.json();assert.equal(h.ok,false);assert.equal(h.database.connected,false);assert.equal(h.aiConfigured,true);
+ r=await worker.fetch(req('/api/recruiter-session'),{});assert.equal(r.status,503);assert.match((await r.json()).error,/DATABASE_URL/);
+ const DB={prepare(){return{first:async()=>{throw Error('Database disconnected')},all:async()=>{throw Error('Database disconnected')}}}};
+ r=await worker.fetch(req('/api/recruiter-session'),{DB});assert.equal(r.status,500);assert.ok((await r.json()).error);
+});

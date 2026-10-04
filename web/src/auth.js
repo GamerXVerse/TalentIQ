@@ -18,7 +18,7 @@ export async function session(req,env){
   const token=tokenFrom(req);
   if(token){const row=await env.DB.prepare("SELECT email,expires_at FROM recruiter_sessions WHERE token_hash=?").bind(await sha(token)).first();if(row&&row.expires_at>Date.now()&&allowed(row.email,env))return{email:row.email,legacy:false}}
   // Keep the existing owner access only until the first password account is created.
-  const platformEmail=emailOf(req.headers.get("oai-authenticated-user-email"));
+  const platformEmail=env.VERCEL_RUNTIME?"":emailOf(req.headers.get("oai-authenticated-user-email"));
   if(platformEmail&&allowed(platformEmail,env)&&await accountCount(env)===0)return{email:platformEmail,legacy:true};
   return null;
 }
@@ -29,9 +29,11 @@ async function issueSession(env,email){const token=hex(crypto.getRandomValues(ne
 export async function setup(req,env){
   const blocked=requireSameOrigin(req);if(blocked)return blocked;
   if(Number(req.headers.get("content-length")||0)>4096)return response({error:"Request is too large."},413);
-  const email=emailOf(req.headers.get("oai-authenticated-user-email"));
-  if(!email||!allowed(email,env)||await accountCount(env)!==0)return response({error:"Owner verification is required for initial setup."},403);
-  const {password}=await req.json();
+  const input=await req.json();
+  const tokenOK=env.RECRUITER_SETUP_TOKEN&&typeof input.setupToken==="string"&&equalHex(await sha(input.setupToken),await sha(env.RECRUITER_SETUP_TOKEN));
+  const email=env.VERCEL_RUNTIME?(tokenOK?emailOf(input.email):""):emailOf(req.headers.get("oai-authenticated-user-email"));
+  if(!email||!allowed(email,env)||await accountCount(env)!==0)return response({error:"A valid one-time setup token and an approved interviewer email are required."},403);
+  const {password}=input;
   if(typeof password!=="string"||password.length<12||password.length>128)return response({error:"Choose a password between 12 and 128 characters."},400);
   const salt=hex(crypto.getRandomValues(new Uint8Array(16))),hash=await passwordHash(password,salt),time=new Date().toISOString();
   await env.DB.prepare("INSERT INTO recruiter_accounts(email,password_salt,password_hash,iterations,failed_attempts,locked_until,created_at,updated_at) VALUES(?,?,?,?,0,0,?,?)").bind(email,salt,hash,ITERATIONS,time,time).run();
@@ -51,3 +53,4 @@ export async function login(req,env){
   return issueSession(env,email);
 }
 export async function logout(req,env){const blocked=requireSameOrigin(req);if(blocked)return blocked;const token=tokenFrom(req);if(token)await env.DB.prepare("DELETE FROM recruiter_sessions WHERE token_hash=?").bind(await sha(token)).run();return response({authorized:false},200,{"set-cookie":cookie("",0)})}
+export {passwordHash,sha,equalHex,hex,emailOf};

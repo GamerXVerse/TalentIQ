@@ -1,0 +1,1 @@
+if(process.env.DATABASE_URL||process.env.POSTGRES_URL){process.env.DATABASE_URL ||= process.env.POSTGRES_URL;await import('./migrate.mjs');}else{console.log('DATABASE_URL missing: UI will deploy with check-in disabled. Connect Neon and redeploy.');}

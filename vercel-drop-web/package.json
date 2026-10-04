@@ -1,0 +1,17 @@
+{
+  "name": "talentiq-career-fair",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "build": "node scripts/prepare.mjs",
+    "db:migrate": "node --env-file-if-exists=.env.local scripts/migrate.mjs",
+    "interviewer:add": "node --env-file=.env.local scripts/provision-interviewer.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "1.0.2"
+  }
+}
