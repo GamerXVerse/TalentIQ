@@ -4,7 +4,7 @@ const MAX_BODY=4200000;
 export function environment(values=process.env){
   const url=values.DATABASE_URL||values.POSTGRES_URL;
   const DB=url?createDatabase(url):undefined;
-  return{DB,UPLOADS:DB?databaseUploads(DB):undefined,VERCEL_RUNTIME:true,REQUIRE_CANDIDATE_AUTH:true,GROQ_API_KEY:values.GROQ_API_KEY,GROQ_MODEL:values.GROQ_MODEL,GROQ_VISION_MODEL:values.GROQ_VISION_MODEL,GROQ_AUDIO_MODEL:values.GROQ_AUDIO_MODEL,RECRUITER_EMAILS:values.RECRUITER_EMAILS,RECRUITER_SETUP_TOKEN:values.RECRUITER_SETUP_TOKEN};
+  return{DB,UPLOADS:DB?databaseUploads(DB):undefined,VERCEL_RUNTIME:true,GROQ_API_KEY:values.GROQ_API_KEY,GROQ_MODEL:values.GROQ_MODEL,GROQ_VISION_MODEL:values.GROQ_VISION_MODEL,GROQ_AUDIO_MODEL:values.GROQ_AUDIO_MODEL,RECRUITER_EMAILS:values.RECRUITER_EMAILS,RECRUITER_SETUP_TOKEN:values.RECRUITER_SETUP_TOKEN};
 }
 async function readBody(req){
   if(Number(req.headers['content-length']||0)>MAX_BODY)throw Object.assign(Error('Request is too large. Resume and audio files must be under 3 MB.'),{status:413});

@@ -1,7 +1,8 @@
 import {zipSync,strToU8} from "fflate";
 import {session,sessionStatus,setup,login,logout,requireSameOrigin} from "./auth.js";
-import {candidateAuth,candidateSession,rateLimit} from './candidate-auth.js';
+import {rateLimit} from './rate-limit.js';
 import {parseResume,transcribe,groq} from './intelligence.js';
+import {interviewRoute} from './interviews.js';
 const STATUSES=["New","Reviewed","Follow-Up","Interview Requested","Closed"], APPROVALS=["Approved","Rejected"], SOURCES=["Candidate profile","Resume","Recruiter notes"];
 const PROTECTED=/\b(age|aged|young|old|elderly|gender|male|female|woman|man|race|racial|ethnicity|ethnic|religion|religious|disability|disabled|pregnan|marital|national origin|sexual orientation)\b/i;
 const DECISION=/\b(rank|score|rating|recommend(ed|ation)? (to )?(advance|reject|hire)|advance candidate|reject candidate|best candidate|top candidate|poor fit|good fit)\b/i;
@@ -11,16 +12,15 @@ const parse=(v,f)=>{try{return JSON.parse(v)}catch{return f}}, now=()=>new Date(
 const forbidden=()=>json({error:"Recruiter sign-in is required to view or change candidate records."},403);
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff",...headers}});
 const select=`c.*,o.recruiter_name,o.conversation_notes,o.areas_discussed,o.follow_up_questions,o.recommended_next_steps,o.candidate_questions FROM candidates c LEFT JOIN recruiter_observations o ON o.candidate_id=c.id`;
-function candidate(r){return r&&{id:r.id,firstName:r.first_name,lastName:r.last_name,preferredName:r.preferred_name,email:r.email,phone:r.phone,university:r.university,degreeProgram:r.degree_program,major:r.major,graduationDate:r.graduation_date,gpa:r.gpa,workAuthorization:r.work_authorization,desiredFunction:r.desired_function,technicalInterests:parse(r.technical_interests,[]),preferredLocations:parse(r.preferred_locations,[]),relevantCoursework:r.relevant_coursework,relevantSkills:parse(r.relevant_skills,[]),projectExperience:r.project_experience,eventCode:r.event_code,resumeName:r.resume_name,resumeText:r.resume_text,aiConsent:Boolean(r.ai_consent),recordStatus:r.record_status,approvalStatus:r.approval_status,approvalTimestamp:r.approval_timestamp,approvedBy:r.approved_by,summary:parse(r.summary_json,null),createdAt:r.created_at,updatedAt:r.updated_at,observations:{recruiterName:r.recruiter_name||"",conversationNotes:r.conversation_notes||"",areasDiscussed:r.areas_discussed||"",followUpQuestions:r.follow_up_questions||"",recommendedNextSteps:r.recommended_next_steps||"",candidateQuestions:r.candidate_questions||""}}}
+function candidate(r){return r&&{id:r.id,firstName:r.first_name,lastName:r.last_name,preferredName:r.preferred_name,email:r.email,phone:r.phone,university:r.university,degreeProgram:r.degree_program,major:r.major,graduationDate:r.graduation_date,gpa:r.gpa,workAuthorization:r.work_authorization,desiredFunction:r.desired_function,technicalInterests:parse(r.technical_interests,[]),preferredLocations:parse(r.preferred_locations,[]),relevantCoursework:r.relevant_coursework,relevantSkills:parse(r.relevant_skills,[]),projectExperience:r.project_experience,eventCode:r.event_code,resumeName:r.resume_name,resumeText:r.resume_text,aiConsent:Boolean(r.ai_consent),recordStatus:r.record_status,approvalStatus:r.approval_status,approvalTimestamp:r.approval_timestamp,approvedBy:r.approved_by,summary:parse(r.summary_json,null),createdAt:r.created_at,updatedAt:r.updated_at,removedAt:r.removed_at||null,observations:{recruiterName:r.recruiter_name||"",conversationNotes:r.conversation_notes||"",areasDiscussed:r.areas_discussed||"",followUpQuestions:r.follow_up_questions||"",recommendedNextSteps:r.recommended_next_steps||"",candidateQuestions:r.candidate_questions||""}}}
 async function body(req){if(!(req.headers.get("content-type")||"").includes("application/json"))throw Error("Expected JSON.");return req.json()}
 async function getOne(env,id){const r=await env.DB.prepare(`SELECT ${select} WHERE c.id=?`).bind(id).first();return r?json({candidate:candidate(r)}):json({error:"Candidate not found."},404)}
-async function getList(req,env){const u=new URL(req.url),q=clean(u.searchParams.get("q"),200).toLowerCase(),s=clean(u.searchParams.get("status"),40),e=clean(u.searchParams.get("event"),80);let sql=`SELECT ${select} WHERE 1=1`,b=[];if(s){sql+=" AND c.record_status=?";b.push(s)}if(e){sql+=" AND c.event_code=?";b.push(e.toUpperCase())}if(q){sql+=" AND lower(c.first_name||' '||c.last_name||' '||c.email||' '||c.university||' '||c.major||' '||c.relevant_skills||' '||c.project_experience) LIKE ?";b.push(`%${q}%`)}sql+=" ORDER BY c.updated_at DESC LIMIT 250";const r=await env.DB.prepare(sql).bind(...b).all();return json({candidates:r.results.map(candidate)})}
+async function getList(req,env){const u=new URL(req.url),q=clean(u.searchParams.get("q"),200).toLowerCase(),s=clean(u.searchParams.get("status"),40),e=clean(u.searchParams.get("event"),80);let sql=`SELECT ${select} WHERE c.removed_at IS ${u.searchParams.get("removed")==="1"?"NOT ":""}NULL`,b=[];if(s){sql+=" AND c.record_status=?";b.push(s)}if(e){sql+=" AND c.event_code=?";b.push(e.toUpperCase())}if(q){sql+=" AND lower(c.first_name||' '||c.last_name||' '||c.email||' '||c.university||' '||c.major||' '||c.relevant_skills||' '||c.project_experience) LIKE ?";b.push(`%${q}%`)}sql+=" ORDER BY c.updated_at DESC LIMIT 250";const r=await env.DB.prepare(sql).bind(...b).all();return json({candidates:r.results.map(candidate)})}
 async function metric(env,session,event,id=null,duration=null){await env.DB.prepare("INSERT INTO measurements(session_id,event_name,candidate_id,duration_ms,created_at) VALUES(?,?,?,?,?)").bind(clean(session,100),clean(event,100),id,duration,now()).run()}
 async function audit(env,id,actor,action){await env.DB.prepare("INSERT INTO audit_events(candidate_id,actor_email,action,created_at) VALUES(?,?,?,?)").bind(id,actor,action,now()).run()}
 async function create(req,env){
   if(Number(req.headers.get("content-length")||0)>7e6)return json({error:"Submission is too large."},413);
   const x=await body(req);
-  if(env.REQUIRE_CANDIDATE_AUTH){const account=await candidateSession(req,env);if(!account||account.email!==clean(x.email,200).toLowerCase())return json({error:'Sign in with the email used for this check-in.'},401);}
   if(x.website)return json({error:"Submission could not be accepted."},400);
   const required=["firstName","lastName","email","university","degreeProgram","major","graduationDate","desiredFunction","eventCode"];
   const missing=required.filter(k=>!clean(x[k]));
@@ -30,7 +30,7 @@ async function create(req,env){
   const event=clean(x.eventCode,80).toUpperCase();
   const allowed=['12345'];
   if(!allowed.includes(event))return json({error:"Ask the recruiter for a valid event code."},400);
-  const existing=await env.DB.prepare('SELECT id FROM candidates WHERE email=? AND event_code=? ORDER BY created_at DESC LIMIT 1').bind(email,event).first();
+  const existing=await env.DB.prepare('SELECT id FROM candidates WHERE email=? AND event_code=? AND removed_at IS NULL ORDER BY created_at DESC LIMIT 1').bind(email,event).first();
   if(existing)return json({id:existing.id,confirmationCode:existing.id.slice(0,8).toUpperCase(),alreadyCheckedIn:true},200);
   const since=new Date(Date.now()-3600000).toISOString();
   const recent=await env.DB.prepare("SELECT COUNT(*) AS count FROM candidates WHERE email=? AND created_at>=?").bind(email,since).first();
@@ -68,10 +68,31 @@ async function model(env,c){
 }
 async function generate(env,id,actor){const r=await getOne(env,id);if(r.status!==200)return r;const c=(await r.json()).candidate;if(!c.aiConsent)return json({error:"This candidate did not opt in to external AI processing. Use recruiter notes without AI."},403);try{const s=await model(env,c);await env.DB.prepare("UPDATE candidates SET summary_json=?,approval_status='Pending',approval_timestamp=NULL,approved_by=NULL,updated_at=? WHERE id=?").bind(JSON.stringify(s),now(),id).run();await audit(env,id,actor,"ai_draft_generated");return json({summary:s})}catch(e){return json({error:e.message},503)}}
 async function review(req,env,id,actor){const x=await body(req);if(!APPROVALS.includes(x.action))return json({error:"Choose Approved or Rejected."},400);const r=await env.DB.prepare("SELECT summary_json FROM candidates WHERE id=?").bind(id).first();if(!r)return json({error:"Candidate not found."},404);let s=parse(r.summary_json,null);if(!s)return json({error:"Generate a summary first."},400);s=validateSummary({...s,statements:x.editedStatements||s.statements,interviewQuestions:x.editedQuestions||s.interviewQuestions||[],model:s.model});const t=now();await env.DB.prepare("UPDATE candidates SET summary_json=?,approval_status=?,approval_timestamp=?,approved_by=?,updated_at=? WHERE id=?").bind(JSON.stringify(s),x.action,t,actor,t,id).run();await audit(env,id,actor,x.action==="Approved"?"ai_draft_approved":"ai_draft_rejected");return getOne(env,id)}
-async function deleteCandidate(env,id,actor){const row=await env.DB.prepare("SELECT resume_key FROM candidates WHERE id=?").bind(id).first();if(!row)return json({error:"Candidate not found."},404);if(row.resume_key)await env.UPLOADS.delete(row.resume_key);await env.DB.batch([env.DB.prepare("DELETE FROM recruiter_observations WHERE candidate_id=?").bind(id),env.DB.prepare("DELETE FROM candidates WHERE id=?").bind(id),env.DB.prepare("INSERT INTO audit_events(candidate_id,actor_email,action,created_at) VALUES(?,?,?,?)").bind(id,actor,"candidate_deleted",now())]);return json({deleted:true})}
-async function csv(env){const r=await env.DB.prepare(`SELECT ${select} ORDER BY c.updated_at DESC`).all(),h=["Candidate ID","Name","Email","University","Degree Program","Major","Graduation Date","Desired Function","Skills","Record Status","Approval Status","Approved By","Updated At"],esc=v=>`"${String(v??"").replaceAll('"','""')}"`,lines=[h.map(esc).join(","),...r.results.map(candidate).map(c=>[c.id,`${c.firstName} ${c.lastName}`,c.email,c.university,c.degreeProgram,c.major,c.graduationDate,c.desiredFunction,c.relevantSkills.join("; "),c.recordStatus,c.approvalStatus,c.approvedBy,c.updatedAt].map(esc).join(","))];return new Response(lines.join("\n"),{headers:{"content-type":"text/csv","content-disposition":"attachment; filename=talentiq-candidates.csv"}})}
+async function deleteCandidate(env,id,actor){
+  const row=await env.DB.prepare('SELECT removed_at FROM candidates WHERE id=?').bind(id).first();
+  if(!row)return json({error:'Candidate not found.'},404);
+  if(!row.removed_at){const t=now();await env.DB.batch([
+    env.DB.prepare('UPDATE candidates SET removed_at=?,removed_by=?,updated_at=? WHERE id=?').bind(t,actor,t,id),
+    env.DB.prepare('INSERT INTO audit_events(candidate_id,actor_email,action,created_at) VALUES(?,?,?,?)').bind(id,actor,'check_in_removed',t)
+  ]);}
+  return json({removed:true});
+}
+async function restoreCandidate(env,id,actor){
+  const row=await env.DB.prepare('SELECT email,event_code,removed_at FROM candidates WHERE id=?').bind(id).first();
+  if(!row)return json({error:'Candidate not found.'},404);
+  if(row.removed_at){
+    const active=await env.DB.prepare('SELECT id FROM candidates WHERE email=? AND event_code=? AND removed_at IS NULL AND id<>? LIMIT 1').bind(row.email,row.event_code,id).first();
+    if(active)return json({error:'This candidate has a newer active check-in. Remove that check-in before restoring this one.'},409);
+    const t=now();await env.DB.batch([
+      env.DB.prepare('UPDATE candidates SET removed_at=NULL,removed_by=NULL,updated_at=? WHERE id=?').bind(t,id),
+      env.DB.prepare('INSERT INTO audit_events(candidate_id,actor_email,action,created_at) VALUES(?,?,?,?)').bind(id,actor,'check_in_restored',t)
+    ]);
+  }
+  return getOne(env,id);
+}
+async function csv(env){const r=await env.DB.prepare(`SELECT ${select} WHERE c.removed_at IS NULL ORDER BY c.updated_at DESC`).all(),h=["Candidate ID","Name","Email","University","Degree Program","Major","Graduation Date","Desired Function","Skills","Record Status","Approval Status","Approved By","Updated At"],esc=v=>`"${String(v??"").replaceAll('"','""')}"`,lines=[h.map(esc).join(","),...r.results.map(candidate).map(c=>[c.id,`${c.firstName} ${c.lastName}`,c.email,c.university,c.degreeProgram,c.major,c.graduationDate,c.desiredFunction,c.relevantSkills.join("; "),c.recordStatus,c.approvalStatus,c.approvedBy,c.updatedAt].map(esc).join(","))];return new Response(lines.join("\n"),{headers:{"content-type":"text/csv","content-disposition":"attachment; filename=talentiq-candidates.csv"}})}
 async function xlsx(env){
-  const rows=(await env.DB.prepare(`SELECT ${select} ORDER BY c.updated_at DESC LIMIT 10000`).all()).results.map(candidate);
+  const rows=(await env.DB.prepare(`SELECT ${select} WHERE c.removed_at IS NULL ORDER BY c.updated_at DESC LIMIT 10000`).all()).results.map(candidate);
   const columns=[
     ["Candidate ID",c=>c.id],["First name",c=>c.firstName],["Last name",c=>c.lastName],["Preferred name",c=>c.preferredName],["Email",c=>c.email],["Phone",c=>c.phone],["University",c=>c.university],["Degree program",c=>c.degreeProgram],["Major",c=>c.major],["Graduation date",c=>c.graduationDate],["GPA",c=>c.gpa],["Work authorization",c=>c.workAuthorization],["Desired function",c=>c.desiredFunction],["Technical interests",c=>c.technicalInterests.join("; ")],["Preferred locations",c=>c.preferredLocations.join("; ")],["Relevant coursework",c=>c.relevantCoursework],["Relevant skills",c=>c.relevantSkills.join("; ")],["Project experience",c=>c.projectExperience],["Event code",c=>c.eventCode],["Resume name",c=>c.resumeName],["Resume text",c=>c.resumeText],["Record status",c=>c.recordStatus],["Summary approval",c=>c.approvalStatus],["Approved by",c=>c.approvedBy],["Summary statements",c=>(c.summary?.statements||[]).map(s=>s.text).join(" | ")],["Interview questions",c=>(c.summary?.interviewQuestions||[]).map(s=>s.text).join(" | ")],["Recruiter name",c=>c.observations.recruiterName],["Conversation notes",c=>c.observations.conversationNotes],["Areas discussed",c=>c.observations.areasDiscussed],["Follow-up questions",c=>c.observations.followUpQuestions],["Recommended next steps",c=>c.observations.recommendedNextSteps],["Candidate questions",c=>c.observations.candidateQuestions],["Submitted at",c=>c.createdAt],["Updated at",c=>c.updatedAt]
   ];
@@ -105,24 +126,25 @@ async function route(req,env){
     if(p==="/api/auth/login"&&m==="POST"){if(!await rateLimit(req,env,'interviewer-login',15))return json({error:'Too many attempts. Try again in 15 minutes.'},429);return await login(req,env)}
     if(p==="/api/auth/setup"&&m==="POST"){if(!await rateLimit(req,env,'interviewer-setup',5))return json({error:'Too many attempts. Try again in 15 minutes.'},429);return await setup(req,env)}
     if(p==="/api/auth/logout"&&m==="POST")return await logout(req,env);
-    const candidateAction=p.match(/^\/api\/candidate-auth\/(session|register|login|logout)$/)?.[1];
-    if(candidateAction&&m===(candidateAction==='session'?'GET':'POST'))return await candidateAuth(req,env,candidateAction);
+    if(p.startsWith('/api/candidate-auth/')||p==='/api/my-check-in')return json({error:'Candidate accounts are disabled. Enter your details and check in without signing in.'},410);
     if(p==='/api/resume/parse'&&m==='POST')return await parseResume(req,env);
     if(p==='/api/transcribe'&&m==='POST')return await transcribe(req,env);
-    if(p==='/api/my-check-in'&&m==='GET'){
-      const account=await candidateSession(req,env);if(!account)return json({error:'Candidate sign-in is required.'},401);
-      const row=await env.DB.prepare('SELECT id,first_name,last_name,event_code,created_at FROM candidates WHERE email=? ORDER BY created_at DESC LIMIT 1').bind(account.email).first();
-      return json({checkIn:row?{id:row.id,name:`${row.first_name} ${row.last_name}`,eventCode:row.event_code,confirmationCode:row.id.slice(0,8).toUpperCase(),createdAt:row.created_at}:null});
+    if(p==="/api/candidates"&&m==="POST"){
+      if(!await rateLimit(req,env,'candidate-check-in',100))return json({error:'Too many check-ins. Try again in 15 minutes or ask the interviewer for help.'},429);
+      return await create(req,env);
     }
-    if(p==="/api/candidates"&&m==="POST")return await create(req,env);
     const actor=(await session(req,env))?.email;
     if(p.startsWith("/api/")&&!actor)return forbidden();
+    if(/^\/api\/candidates\/[^/]+\/interviews$/.test(p)||p.startsWith('/api/interviews/'))return await interviewRoute(req,env,actor);
     if(p.startsWith("/api/")&&!['GET','HEAD'].includes(m)){const blocked=requireSameOrigin(req);if(blocked)return blocked}
     if(p==="/api/candidates"&&m==="GET")return await getList(req,env);
     if(p==="/api/export.csv"&&m==="GET"){const result=await csv(env);await audit(env,null,actor,"csv_exported");return result}
     if(p==="/api/export.xlsx"&&m==="GET"){const result=await xlsx(env);await audit(env,null,actor,"excel_exported");return result}
-    const a=p.match(/^\/api\/candidates\/([^/]+)(?:\/(summary|review|resume))?$/);
+    const a=p.match(/^\/api\/candidates\/([^/]+)(?:\/(summary|review|resume|restore))?$/);
     if(a){
+      if(a[2]==='restore'&&m==='POST')return await restoreCandidate(env,a[1],actor);
+      const needsActiveRecord=Boolean(a[2])||!['GET','DELETE'].includes(m);
+      if(needsActiveRecord){const record=await env.DB.prepare('SELECT removed_at FROM candidates WHERE id=?').bind(a[1]).first();if(!record||record.removed_at)return json({error:'This check-in is removed or no longer available.'},404);}
       if(!a[2]&&m==="GET")return await getOne(env,a[1]);
       if(!a[2]&&m==="PATCH")return await update(req,env,a[1],actor);
       if(!a[2]&&m==="DELETE")return await deleteCandidate(env,a[1],actor);
