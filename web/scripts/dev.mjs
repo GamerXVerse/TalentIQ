@@ -19,7 +19,7 @@ if(process.argv.includes('--seed-demo')){
  console.log('Synthetic preview only. Interviewer: interviewer@example.test / Local-preview-12345');
 }
 const handler=makeHandler(()=>env),base=resolve('dist/client'),port=Number(process.env.PORT)||4175;
-const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.png':'image/png','.ttf':'font/ttf','.txt':'text/plain'};
+const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png','.ttf':'font/ttf','.txt':'text/plain'};
 const server=createServer(async(req,res)=>{if(req.url.startsWith('/api/'))return handler(req,res);const path=resolve(base,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));if(!path.startsWith(base+'/')&&path!==base){res.statusCode=403;res.end();return;}const file=existsSync(path)&&statSync(path).isFile()?path:resolve(base,'index.html');res.setHeader('content-type',types[extname(file)]||'application/octet-stream');res.setHeader('cache-control','no-cache');res.end(readFileSync(file));});
 server.listen(port,'127.0.0.1',()=>console.log(`TalentIQ preview http://localhost:${port}. Local Postgres persists in .local-db; no fake AI responses.`));
 process.on('SIGINT',async()=>{server.close();await pg.close();process.exit(0)});

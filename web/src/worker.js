@@ -115,7 +115,7 @@ function asset(path){const item=STATIC[path]||STATIC["/index.html"];return new R
 async function route(req,env){
   const u=new URL(req.url),p=u.pathname,m=req.method;
   try{
-    if(p==='/api/event'&&m==='GET')return u.searchParams.get('code')==='12345'?json({valid:true,code:'12345',name:'J.B. Hunt Career Fair'}):json({error:'This event code is not valid. Use 12345.'},400);
+    if(p==='/api/event'&&m==='GET')return u.searchParams.get('code')==='12345'?json({valid:true,code:'12345',name:'TalentIQ Career Fair'}):json({error:'This event code is not valid. Use 12345.'},400);
     if(p==="/api/health"&&m==="GET"){
       let connected=false;try{if(env.DB){await env.DB.prepare('SELECT id FROM candidates LIMIT 1').all();connected=true}}catch{}
       return json({ok:connected&&Boolean(env.UPLOADS),database:{provider:env.DB?.provider||(env.DB?'D1':null),connected},uploads:{provider:env.UPLOADS?.provider||(env.UPLOADS?'R2':null),configured:Boolean(env.UPLOADS)},aiConfigured:Boolean(env.GROQ_API_KEY),interviewerConfigured:Boolean(env.RECRUITER_EMAILS),eventCode:'12345'});
@@ -128,13 +128,13 @@ async function route(req,env){
     if(p==="/api/auth/logout"&&m==="POST")return await logout(req,env);
     if(p.startsWith('/api/candidate-auth/')||p==='/api/my-check-in')return json({error:'Candidate accounts are disabled. Enter your details and check in without signing in.'},410);
     if(p==='/api/resume/parse'&&m==='POST')return await parseResume(req,env);
-    if(p==='/api/transcribe'&&m==='POST')return await transcribe(req,env);
     if(p==="/api/candidates"&&m==="POST"){
       if(!await rateLimit(req,env,'candidate-check-in',100))return json({error:'Too many check-ins. Try again in 15 minutes or ask the interviewer for help.'},429);
       return await create(req,env);
     }
     const actor=(await session(req,env))?.email;
     if(p.startsWith("/api/")&&!actor)return forbidden();
+    if(p==='/api/transcribe'&&m==='POST')return await transcribe(req,env);
     if(/^\/api\/candidates\/[^/]+\/interviews$/.test(p)||p.startsWith('/api/interviews/'))return await interviewRoute(req,env,actor);
     if(p.startsWith("/api/")&&!['GET','HEAD'].includes(m)){const blocked=requireSameOrigin(req);if(blocked)return blocked}
     if(p==="/api/candidates"&&m==="GET")return await getList(req,env);

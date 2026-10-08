@@ -23,3 +23,10 @@ dialog{border:1px solid #dce2d1;border-radius:12px;padding:28px;color:var(--ink)
 
 .candidate-synopsis{border-top:3px solid #f4ca16}.synopsis-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.synopsis-heading h3{margin:8px 0 16px}.synopsis-heading .primary{flex-shrink:0}.synopsis-interview{padding:20px 0;border-top:1px solid #e5e9df}.synopsis-interview h4{margin:18px 0 10px}.synopsis-empty{padding:18px;background:#f6f8f1;border-radius:6px}.synopsis-empty p{margin:8px 0 0}.synopsis-manual{border-top:1px solid #e5e9df;padding-top:16px}.synopsis-interview .source-chip{align-self:flex-start;overflow-wrap:anywhere}.candidate-synopsis .interview-summary p{color:#3c4534}
 @media(max-width:760px){.synopsis-heading{flex-direction:column}.synopsis-heading .primary{width:100%;margin-bottom:14px}}
+
+/* Compact neutral truck emblem alongside the TalentIQ wordmark. */
+.topbar .brand img{width:48px;height:36px}.candidate-footer img{width:32px;height:24px}
+@media(max-width:760px){.topbar .brand img{width:36px;height:27px}}
+
+/* Keep complete truck drawings visible in narrow image panels. */
+.story-image>img,.sidebar-photo img,.auth-art>img{object-fit:contain;background:#e9ebdf}

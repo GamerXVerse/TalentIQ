@@ -32,10 +32,13 @@ test('account-free check-in, private interviewer records, consent, removal and r
   assert.equal((await worker.fetch(req('/api/resume/parse','POST',{eventCode:'12345',aiConsent:false,text:'Resume'}),env)).status,403);
   r=await worker.fetch(req('/api/resume/parse','POST',{eventCode:'12345',aiConsent:true,images:['data:image/jpeg;base64,/9j/']}),env);assert.equal(r.status,200);assert.equal((await r.json()).fields.firstName,'Alex');assert.equal(JSON.parse(calls.at(-1).options.body).model,'qwen/qwen3.8-27b');
   const intro={eventCode:'12345',mime:'audio/webm',base64:Buffer.alloc(150).toString('base64'),consent:true};
-  r=await worker.fetch(req('/api/transcribe','POST',intro),env);assert.equal(r.status,200);assert.match((await r.json()).text,/Python/);
+  const beforeCandidateAudio=calls.length;
+  r=await worker.fetch(req('/api/transcribe','POST',intro),env);assert.equal(r.status,403);
   assert.equal((await worker.fetch(req('/api/transcribe','POST',{...intro,consent:false}),env)).status,403);
-  assert.equal((await worker.fetch(req('/api/transcribe','POST',{...intro,eventCode:'wrong'}),env)).status,400);
+  assert.equal((await worker.fetch(req('/api/transcribe','POST',{...intro,eventCode:'wrong'}),env)).status,403);
   assert.equal((await worker.fetch(req('/api/transcribe','POST',{...intro,candidateId:id}),env)).status,403);
+  assert.equal((await worker.fetch(req('/api/transcribe','POST',intro,other),env)).status,403);
+  assert.equal(calls.length,beforeCandidateAudio);
   assert.equal((await worker.fetch(req('/api/auth/setup','POST',{email:'recruiter@jbhunt.test',password:'Strong-recruiter-password',setupToken:'wrong'}),env)).status,403);
   assert.equal((await worker.fetch(req('/api/recruiter-session','GET',undefined,'',{'oai-authenticated-user-email':'recruiter@jbhunt.test'}),env)).status,200);
   assert.equal((await(await worker.fetch(req('/api/recruiter-session','GET',undefined,'',{'oai-authenticated-user-email':'recruiter@jbhunt.test'}),env)).json()).authorized,false);
@@ -46,6 +49,9 @@ test('account-free check-in, private interviewer records, consent, removal and r
   r=await worker.fetch(req(`/api/candidates/${id}/summary`,'POST',{},recruiter),env);assert.equal(r.status,200);assert.equal((await r.json()).summary.interviewQuestions.length,1);
   r=await worker.fetch(req(`/api/candidates/${id}/review`,'POST',{action:'Approved'},recruiter),env);assert.equal((await r.json()).candidate.approvalStatus,'Approved');
   const recording={mime:'audio/webm',base64:Buffer.alloc(150).toString('base64'),consent:true,candidateId:id};
+  const beforeInvalidInterviewerAudio=calls.length;
+  assert.equal((await worker.fetch(req('/api/transcribe','POST',intro,recruiter),env)).status,400);
+  assert.equal(calls.length,beforeInvalidInterviewerAudio);
   r=await worker.fetch(req('/api/transcribe','POST',recording,recruiter),env);assert.equal(r.status,200);assert.match((await r.json()).text,/Python/);
   await DB.prepare('UPDATE candidates SET ai_consent=0 WHERE id=?').bind(id).run();const before=calls.length;
   assert.equal((await worker.fetch(req(`/api/candidates/${id}/summary`,'POST',{},recruiter),env)).status,403);

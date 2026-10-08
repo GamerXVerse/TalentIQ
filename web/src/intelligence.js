@@ -26,12 +26,12 @@ export async function parseResume(req,env){
   return json({resumeText:String(out.resumeText||text).slice(0,20000),fields,warnings:Array.isArray(out.warnings)?out.warnings.filter(v=>typeof v==='string').slice(0,5):[]});
 }
 export async function transcribe(req,env){
-  if(!await rateLimit(req,env,'transcribe',20))return json({error:'Too many recordings. Try again in 15 minutes.'},429);
+  const actor=await session(req,env);
+  if(!actor)return json({error:'Interviewer sign-in is required to transcribe a candidate conversation.'},403);
+  if(!await rateLimit(req,env,'transcribe:'+actor.email,20))return json({error:'Too many recordings. Try again in 15 minutes.'},429);
   const x=await req.json();if(x.consent!==true)return json({error:'Permission from everyone being recorded is required.'},403);
-  if(x.candidateId){
-    if(!await session(req,env))return json({error:'Interviewer sign-in is required to transcribe a candidate conversation.'},403);
-    const row=await env.DB.prepare('SELECT ai_consent FROM candidates WHERE id=? AND removed_at IS NULL').bind(String(x.candidateId)).first();if(!row?.ai_consent)return json({error:'This candidate has not consented to external AI processing.'},403);
-  }else if(x.eventCode!=='12345')return json({error:'Enter the event code 12345 before recording an introduction.'},400);
+  if(typeof x.candidateId!=='string'||!x.candidateId.trim())return json({error:'Choose a candidate from the interviewer workspace before transcribing an interview.'},400);
+  const row=await env.DB.prepare('SELECT ai_consent FROM candidates WHERE id=? AND removed_at IS NULL').bind(x.candidateId).first();if(!row?.ai_consent)return json({error:'This candidate has not consented to external AI processing.'},403);
   return json({text:await transcribeAudio(env,x)});
 }
 export async function transcribeAudio(env,x){
