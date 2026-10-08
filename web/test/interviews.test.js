@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import worker from '../dist/server/index.js';
 import {localDatabase} from '../server/local-database.js';
 import {passwordHash} from '../src/auth.js';
-import {validateInterviewSummary} from '../src/interviews.js';
+import {validateInterviewSummary,interviewNotesFormat} from '../src/interviews.js';
 const origin='https://talentiq.test';
 const req=(path,method='GET',body,cookie='',extra={})=>new Request(origin+path,{method,headers:{origin,'content-type':'application/json',cookie,...extra},body:body===undefined?undefined:JSON.stringify(body)});
 test('interviews persist ordered transcripts, recover from Groq failures and protect private notes',async()=>{
@@ -16,6 +16,8 @@ test('interviews persist ordered transcripts, recover from Groq failures and pro
    return new Response(JSON.stringify({text:silentAudio?'':'I built a Python route planner. I tested it with 200 sample routes.'}));
   }
   assert.match(JSON.parse(options.body).messages[0].content,/Speaker identity is not verified/);
+  assert.equal(JSON.parse(options.body).response_format.json_schema.name,'interview_notes');
+  assert.equal(JSON.parse(options.body).response_format.json_schema.strict,true);
   if(failNotes)return new Response('{}',{status:503});
   return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({quickNotes:[{text:'Discussed a Python route planner.',evidence:'I built a Python route planner.',segmentSequence:1}],highlights:[{text:'Used 200 sample routes to test the planner.',evidence:'I tested it with 200 sample routes.',segmentSequence:2}],followUpQuestions:[{text:'How were the sample routes selected?',evidence:'200 sample routes',segmentSequence:2}]})}}]}));
  };
@@ -43,9 +45,26 @@ test('interviews persist ordered transcripts, recover from Groq failures and pro
   r=await worker.fetch(req(`/api/interviews/${id}/segments`,'POST',{...chunk,sequence:2,durationMs:12000},owner),env);assert.equal(r.status,200);
   assert.equal((await worker.fetch(req(`/api/interviews/${id}/finish`,'POST',{consent:true},other),env)).status,403);
   r=await worker.fetch(req(`/api/interviews/${id}/finish`,'POST',{consent:true,segmentCount:2},owner),env);assert.equal(r.status,503);assert.equal((await r.json()).transcriptSaved,true);
+  r=await worker.fetch(req('/api/candidates/candidate','GET',undefined,owner),env);assert.deepEqual((await r.json()).candidate.interviewSynopsis,[]);
   r=await worker.fetch(req(path,'GET',undefined,other),env);const partial=(await r.json()).interviews[0];assert.equal(partial.status,'transcribed');assert.deepEqual(partial.segments.map(s=>s.sequence),[1,2]);assert.equal(partial.durationMs,57000);
   failNotes=false;r=await worker.fetch(req(`/api/interviews/${id}/finish`,'POST',{consent:true,segmentCount:2},owner),env);assert.equal(r.status,200);const finished=(await r.json()).interview;assert.equal(finished.status,'completed');assert.equal(finished.summary.highlights.length,1);
   const doneCalls=calls;assert.equal((await worker.fetch(req(`/api/interviews/${id}/finish`,'POST',{consent:true},owner),env)).status,200);assert.equal(calls,doneCalls);
+  // A fresh candidate read exposes the persisted recap without copying it to
+  // handwritten notes or requiring a separate Save action in the browser.
+  r=await worker.fetch(req('/api/candidates/candidate','GET',undefined,other),env);
+  const reread=(await r.json()).candidate;
+  assert.equal(reread.interviewSynopsis.length,1);assert.equal(reread.interviewSynopsis[0].id,id);
+  assert.deepEqual(reread.interviewSynopsis[0].summary,finished.summary);
+  assert.equal(reread.updatedAt,finished.summary.generatedAt);
+  assert.equal(reread.summary,null);
+  r=await worker.fetch(req('/api/candidates/candidate','PATCH',{observations:{conversationNotes:'Reviewed by the interviewer.'}},owner),env);
+  assert.equal((await r.json()).candidate.interviewSynopsis.length,1);
+  await DB.prepare("UPDATE recruiter_observations SET conversation_notes='Existing handwritten notes.'").run();
+  await DB.prepare("INSERT INTO interviews(id,candidate_id,interviewer_email,started_at,status,summary_json) VALUES(?,?,?,'2000-01-01T00:00:00Z','completed',?)").bind(crypto.randomUUID(),'candidate','second@example.test',JSON.stringify(finished.summary)).run();
+  r=await worker.fetch(req('/api/candidates/candidate','GET',undefined,owner),env);
+  const multiple=(await r.json()).candidate.interviewSynopsis;
+  assert.equal(multiple.length,2);assert.equal(multiple[0].id,id);
+  assert.equal((await worker.fetch(req('/api/candidates/candidate'),env)).status,403);
   assert.equal((await worker.fetch(req(`/api/interviews/${id}/segments`,'POST',{...chunk,sequence:3},owner),env)).status,409);
   assert.equal((await DB.prepare('SELECT conversation_notes FROM recruiter_observations').first()).conversation_notes,'Existing handwritten notes.');
   assert.equal((await DB.prepare('SELECT record_status FROM candidates').first()).record_status,'New');
@@ -65,11 +84,19 @@ test('interviews persist ordered transcripts, recover from Groq failures and pro
   assert.equal((await worker.fetch(req(path,'POST',{id:crypto.randomUUID(),consent:true},owner),env)).status,404);
   assert.equal((await worker.fetch(req(`/api/interviews/${id}/finish`,'POST',{consent:true},owner),env)).status,404);
   r=await worker.fetch(req(path,'GET',undefined,owner),env);assert.equal((await r.json()).interviews.find(i=>i.id===id).segments.length,2);
+  r=await worker.fetch(req('/api/candidates/candidate','GET',undefined,owner),env);assert.equal((await r.json()).candidate.interviewSynopsis.length,2);
   assert.equal((await worker.fetch(req(path),env)).status,403);
  }finally{globalThis.fetch=previous;await pg.close();}
 });
 test('interview highlights require matching transcript evidence and exclude hiring decisions',()=>{
  const segments=[{sequence:1,transcript:'I built a Python route planner.'}],base={quickNotes:[{text:'Discussed a route planner.',evidence:'I built a Python route planner.',segmentSequence:1}],highlights:[],followUpQuestions:[]};
  assert.equal(validateInterviewSummary(base,segments).quickNotes.length,1);
- for(const item of [{...base.quickNotes[0],evidence:'Fabricated quote'},{...base.quickNotes[0],segmentSequence:7},{...base.quickNotes[0],text:'Hire this top candidate.'}])assert.throws(()=>validateInterviewSummary({...base,quickNotes:[item]},segments));
+ for(const item of [{...base.quickNotes[0],evidence:'Fabricated quote'},{...base.quickNotes[0],segmentSequence:7},{...base.quickNotes[0],segmentSequence:'1'},{...base.quickNotes[0],text:{}},{...base.quickNotes[0],text:'Hire this top candidate.'}])assert.throws(()=>validateInterviewSummary({...base,quickNotes:[item]},segments));
+});
+test('interview notes use a dedicated strict schema for supported models and retain JSON mode overrides',()=>{
+ const format=interviewNotesFormat('openai/gpt-oss-20b');
+ assert.equal(format.type,'json_schema');assert.equal(format.json_schema.strict,true);
+ assert.deepEqual(format.json_schema.schema.required,['quickNotes','highlights','followUpQuestions']);
+ assert.equal(format.json_schema.schema.properties.quickNotes.items.additionalProperties,false);
+ assert.deepEqual(interviewNotesFormat('custom-model'),{type:'json_object'});
 });

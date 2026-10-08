@@ -31,6 +31,6 @@ test('recorder rotates complete audio files, retains failed uploads and summariz
   const saved=requests.filter(r=>r.path.endsWith('/segments')).slice(1);assert.deepEqual(saved.map(r=>r.data.sequence),[1,2]);
   assert.ok(saved.every(r=>r.data.mime==='audio/webm'&&r.data.base64.length>100));
   assert.match(node('#current-transcript').value,/Transcript 1/);assert.match(node('#current-transcript').value,/Transcript 2/);
-  assert.equal(interviewBusy(),false);assert.match(node('#interview-status').textContent,/highlights are ready/);
+  assert.equal(interviewBusy(),false);assert.match(node('#interview-status').textContent,/highlights are saved to the candidate synopsis/);
  }finally{for(const name of names){if(before[name])Object.defineProperty(globalThis,name,before[name]);else delete globalThis[name];}}
 });

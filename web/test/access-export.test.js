@@ -37,7 +37,7 @@ test("candidate records require an allowlisted signed-in recruiter", async () =>
 test("AI cannot receive a candidate record without opt-in", async () => {
   const noConsent = {
     ...env,
-    DB: { prepare: () => ({ bind() { return this; }, first: async () => ({
+    DB: { prepare: () => ({ bind() { return this; }, all: async () => ({results:[]}), first: async () => ({
       id: "candidate-1", first_name: "Ava", last_name: "Lee", email: "ava@example.org",
       university: "University", degree_program: "BS", major: "CS", graduation_date: "2027-05",
       desired_function: "Software", event_code: "DEMO", technical_interests: "[]",
